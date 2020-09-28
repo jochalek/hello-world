@@ -1,4 +1,4 @@
-# hello-world
-This is for learning github
+# This repo contains my dotfile configs
 
-It is usefull to help organize my Data Science projects and website.
+It is usefull to retain my configuration across workstations.
+
