@@ -8,7 +8,6 @@
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
-(package! org-roam)
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
@@ -49,3 +48,33 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
+
+; For org-raom Second Brain
+(package! org-roam
+  :recipe (:host github :repo "org-roam/org-roam"))
+(package! org-roam-bibtex
+  :recipe (:host github :repo "org-roam/org-roam-bibtex"))
+(package! company-org-roam
+  :recipe (:host github :repo "jethrokuan/company-org-roam"))
+(package! org-download)
+
+; For hosting my Second Brain
+(package! ox-texinfo+
+  :recipe (:host github :repo "tarsius/ox-texinfo-plus"))
+
+; Themes
+(package! less-theme
+  :recipe (:host gitlab :repo "nobiot/less-theme"
+                       :files ("*.el" "less")))
+
+; Academic
+;(package! ivy-bibtex)
+;(package! pandoc-mode)
+(package! pdf-tools)
+(package! org-noter)
+
+; Long form writing
+;(package! olivetti)
+
+; Study tools
+(package! anki-editor)
