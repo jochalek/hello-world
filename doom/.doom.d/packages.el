@@ -49,7 +49,7 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-; For org-raom Second Brain
+; For org-roam second brain
 (package! org-roam
   :recipe (:host github :repo "org-roam/org-roam"))
 (package! org-roam-bibtex
@@ -66,6 +66,10 @@
 (package! less-theme
   :recipe (:host gitlab :repo "nobiot/less-theme"
                        :files ("*.el" "less")))
+
+(package! beacon
+  :recipe (:host github :repo "Malabarba/beacon"
+           :files ("*.el" "beacon")))
 
 ; Academic
 ;(package! ivy-bibtex)
