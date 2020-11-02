@@ -76,6 +76,8 @@
 ;(package! pandoc-mode)
 (package! pdf-tools)
 (package! org-noter)
+(package! org-ref)
+;(package! helm-bibtex)
 
 ; Long form writing
 ;(package! olivetti)

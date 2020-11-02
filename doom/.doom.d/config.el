@@ -53,10 +53,24 @@
 
 ;; Startup options
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
+;(setq +doom-dashboard-banner-file (expand-file-name "banner.png" doom-private-dir))
+;; ox-hugo settings
+(setq hugo-base-dir "/home/justin/projects/hugo-project")
 
 ;; org-roam configuration
-(setq org-roam-directory "~/projects/org-roam")
-(setq org-hugo-default-section-directory "~/projects/hugo-project")
+;; (use-package! org-roam
+;;       :ensure t
+;;       :hook
+;;       (after-init . org-roam-mode)
+;;       :custom
+;;       (org-roam-directory "~/projects/org-roam")
+;;       :bind (:map org-roam-mode-map
+;;               (("C-c n l" . org-roam)
+;;                ("C-c n f" . org-roam-find-file)
+;;                ("C-c n g" . org-roam-graph))
+;;               :map org-mode-map
+;;               (("C-c n i" . org-roam-insert))
+;;               (("C-c n I" . org-roam-insert-immediate))))
 
 ;; for native-comp branch
 (when (fboundp 'native-compile-async)
@@ -85,3 +99,4 @@
 
 ;; Load local configuration
 (load! "~/projects/emacs/localconfig.el")
+(load! "~/projects/emacs/testconfigadd.el")

@@ -56,7 +56,9 @@
 
 ;; org-roam configuration
 (setq org-roam-directory "~/projects/org-roam")
-(setq org-hugo-default-section-directory "~/projects/hugo-project")
+;(setq HUGO_BASE_DIR "/home/justin/projects/hugo-project")
+;(setq HUGO_SECTION "org-posts")
+;(setq org-hugo-default-section-directory "/home/justin/projects/hugo-project/content-org")
 
 ;; for native-comp branch
 (when (fboundp 'native-compile-async)
