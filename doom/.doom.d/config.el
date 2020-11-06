@@ -94,6 +94,21 @@
                (file+headline org-my-anki-file "Dispatch Shelf")
                "* %<%H:%M>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%x\n** Extra\n")))
 
+;; ;; Julia config
+(setenv "PATH" (concat (getenv "PATH") ":/opt/julia-1.5.2/bin"))
+(setq exec-path (append exec-path '("/opt/julia-1.5.2/bin")))
+;; (setq  inferior-julia-program-name "/opt/julia-1.5.2/bin/julia")
+;; (use-package! eglot-jl
+;;   :config
+;;   (setq lsp-julia-default-environment "~/.julia/environments/v1.5")
+;;   :hook (julia-mode . eglot--managed-mode))
+
+;; ;(setq lsp-julia-package-dir nil)
+;; (use-package! lsp-julia
+;;   :config
+;;   (setq lsp-julia-default-environment "~/.julia/environments/v1.5")
+;;   :hook (julia-mode . lsp-mode))
+
 ;; Enable beacon-mode to show my cursor everywhere
 (beacon-mode 1)
 
