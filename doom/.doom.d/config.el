@@ -57,28 +57,10 @@
 ;; ox-hugo settings
 (setq hugo-base-dir "/home/justin/projects/hugo-project")
 
-;; org-roam configuration
-;; (use-package! org-roam
-;;       :ensure t
-;;       :hook
-;;       (after-init . org-roam-mode)
-;;       :custom
-;;       (org-roam-directory "~/projects/org-roam")
-;;       :bind (:map org-roam-mode-map
-;;               (("C-c n l" . org-roam)
-;;                ("C-c n f" . org-roam-find-file)
-;;                ("C-c n g" . org-roam-graph))
-;;               :map org-mode-map
-;;               (("C-c n i" . org-roam-insert))
-;;               (("C-c n I" . org-roam-insert-immediate))))
-
 ;; for native-comp branch
-(when (fboundp 'native-compile-async)
-  (if (yes-or-no-p "async compile?")
-      (setq comp-async-jobs-number 4 ;; not using all cores
-            comp-deferred-compilation t
-            comp-deferred-compilation-black-list '())
-    (setq comp-deferred-compilation nil)))
+(setq comp-async-jobs-number 4 ;; not using all cores
+      comp-deferred-compilation t
+      comp-deferred-compilation-black-list '())
 
 ;; Org-capture templates
 (setq org-my-anki-file "~/projects/anki/anki.org")
@@ -94,24 +76,112 @@
                (file+headline org-my-anki-file "Dispatch Shelf")
                "* %<%H:%M>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%x\n** Extra\n")))
 
-;; ;; Julia config
-(setenv "PATH" (concat (getenv "PATH") ":/opt/julia-1.5.2/bin"))
-(setq exec-path (append exec-path '("/opt/julia-1.5.2/bin")))
-;; (setq  inferior-julia-program-name "/opt/julia-1.5.2/bin/julia")
-;; (use-package! eglot-jl
-;;   :config
-;;   (setq lsp-julia-default-environment "~/.julia/environments/v1.5")
-;;   :hook (julia-mode . eglot--managed-mode))
-
-;; ;(setq lsp-julia-package-dir nil)
-;; (use-package! lsp-julia
-;;   :config
-;;   (setq lsp-julia-default-environment "~/.julia/environments/v1.5")
-;;   :hook (julia-mode . lsp-mode))
-
 ;; Enable beacon-mode to show my cursor everywhere
 (beacon-mode 1)
 
+;; org-roam config
+(use-package! org-roam
+  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
+  :hook
+  (after-init . org-roam-mode)
+  :init
+  (map! :leader
+        :prefix "n"
+        :desc "org-roam" "l" #'org-roam
+        :desc "org-roam-insert" "i" #'org-roam-insert
+        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
+        :desc "org-roam-find-file" "f" #'org-roam-find-file
+        :desc "org-roam-show-graph" "g" #'org-roam-show-graph
+        :desc "org-roam-capture" "c" #'org-roam-capture)
+  (setq org-roam-directory (file-truename "~/projects/org-roam")
+        org-roam-db-gc-threshold most-positive-fixnum
+        org-roam-graph-exclude-matcher "personal"
+        org-roam-tag-sources '(prop last-directory)
+        org-id-link-to-org-use-id t)
+  :config
+  (setq org-roam-capture-templates
+        '(("l" "lit" plain (function org-roam--capture-get-point)
+           "%?"
+           :file-name "lit/${slug}"
+           :head "#+setupfile:./hugo_setup.org
+#+hugo_slug: ${slug}
+#+title: ${title}\n"
+           :unnarrowed t)
+          ("c" "concept" plain (function org-roam--capture-get-point)
+           "%?"
+           :file-name "concepts/${slug}"
+           :head "#+setupfile:./hugo_setup.org
+#+hugo_slug: ${slug}
+#+title: ${title}\n"
+           :unnarrowed t)
+          ("p" "personal" plain (function org-roam-capture--get-point)
+           "%?"
+           :file-name "personal/${slug}"
+           :head "#+title: ${title}\n"
+           :unnarrowed t)))
+  (setq org-roam-capture-ref-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           "%?"
+           :file-name "lit/${slug}"
+           :head "#+setupfile:./hugo_setup.org
+#+roam_key: ${ref}
+#+hugo_slug: ${slug}
+#+roam_tags: website
+#+title: ${title}
+- source :: ${ref}"
+           :unnarrowed t)))
+  (set-company-backend! 'org-mode '(company-capf)))
+
+(use-package! org-roam-protocol
+  :after org-protocol)
+
+(use-package! org-roam-bibtex
+  :after (org-roam)
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :config
+  (setq org-roam-bibtex-preformat-keywords
+   '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+  (setq orb-templates
+        `(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "lit/${slug}"
+           :head ,(concat
+                   "#+setupfile: ./hugo_setup.org\n"
+                   "#+title: ${=key=}: ${title}\n"
+                   "#+roam_key: ${ref}\n\n"
+                   "* ${title}\n"
+                   "  :PROPERTIES:\n"
+                   "  :Custom_ID: ${=key=}\n"
+                   "  :URL: ${url}\n"
+                   "  :AUTHOR: ${author-or-editor}\n"
+                   "  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+                   "  :NOTER_PAGE: \n"
+                   "  :END:\n")
+           :unnarrowed t))))
+
+(use-package! bibtex-completion
+  :config
+  (setq bibtex-completion-notes-path "~/projects/org-roam"
+        bibtex-completion-bibliography "~/projects/org-roam/biblio.bib"
+        bibtex-completion-pdf-field "file"
+        bibtex-completion-notes-path "~/projects/lit/"
+        bibtex-completion-notes-template-multiple-files
+         (concat
+          "#+title: ${title}\n"
+          "#+roam_key: cite:${=key=}\n"
+          "* TODO Notes\n"
+          ":PROPERTIES:\n"
+          ":Custom_ID: ${=key=}\n"
+          ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+          ":AUTHOR: ${author-abbrev}\n"
+          ":JOURNAL: ${journaltitle}\n"
+          ":DATE: ${date}\n"
+          ":YEAR: ${year}\n"
+          ":DOI: ${doi}\n"
+          ":URL: ${url}\n"
+          ":END:\n\n"
+          )))
+
 ;; Load local configuration
 (load! "~/projects/emacs/localconfig.el")
-(load! "~/projects/emacs/testconfigadd.el")
+;(load! "~/projects/emacs/testconfigadd.el")
