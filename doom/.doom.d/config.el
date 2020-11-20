@@ -52,8 +52,10 @@
 ;; they are implemented.
 
 ;; Startup options
-(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
+;(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
 ;(setq +doom-dashboard-banner-file (expand-file-name "banner.png" doom-private-dir))
+(setq inhibit-splash-screen t)
+(add-hook 'after-init-hook #'org-agenda-list)
 ;; ox-hugo settings
 (setq hugo-base-dir "/home/justin/projects/hugo-project")
 
@@ -183,5 +185,5 @@
           )))
 
 ;; Load local configuration
-(load! "~/projects/emacs/localconfig.el")
+(load! "~/.local/emacs/localconfig.el")
 ;(load! "~/projects/emacs/testconfigadd.el")
