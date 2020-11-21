@@ -27,7 +27,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/projects/org/")
+(setq org-directory "~/projects/org")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -57,7 +57,7 @@
 (setq inhibit-splash-screen t)
 (add-hook 'after-init-hook #'org-agenda-list)
 ;; ox-hugo settings
-(setq hugo-base-dir "/home/justin/projects/hugo-project")
+(setq hugo-base-dir "~/projects/hugo-project")
 
 ;; for native-comp branch
 (setq comp-async-jobs-number 4 ;; not using all cores
@@ -76,7 +76,12 @@
              '("A" "Anki cloze"
                entry
                (file+headline org-my-anki-file "Dispatch Shelf")
-               "* %<%H:%M>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%x\n** Extra\n")))
+               "* %<%H:%M>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%x\n** Extra\n"))
+        (add-to-list 'org-capture-templates
+             '("m" "Meeting"
+               entry
+               (file org-default-notes-file)
+               "* Meeting with %? :MEETING:\n" :clock-in t :clock-resume t)))
 
 ;; Enable beacon-mode to show my cursor everywhere
 (beacon-mode 1)
@@ -102,19 +107,13 @@
         org-id-link-to-org-use-id t)
   :config
   (setq org-roam-capture-templates
-        '(("l" "lit" plain (function org-roam--capture-get-point)
+        '(("n" "normal" plain (function org-roam--capture-get-point)
            "%?"
-           :file-name "lit/${slug}"
+           :file-name "${slug}"
            :head "#+setupfile:./hugo_setup.org
 #+hugo_slug: ${slug}
 #+title: ${title}\n"
-           :unnarrowed t)
-          ("c" "concept" plain (function org-roam--capture-get-point)
-           "%?"
-           :file-name "concepts/${slug}"
-           :head "#+setupfile:./hugo_setup.org
-#+hugo_slug: ${slug}
-#+title: ${title}\n"
+           :immediate-finish t
            :unnarrowed t)
           ("p" "personal" plain (function org-roam-capture--get-point)
            "%?"
@@ -141,7 +140,7 @@
   :after (org-roam)
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :config
-  (setq org-roam-bibtex-preformat-keywords
+  (setq orb-preformat-keywords
    '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
   (setq orb-templates
         `(("r" "ref" plain (function org-roam-capture--get-point)
@@ -184,6 +183,11 @@
           ":END:\n\n"
           )))
 
+;; org-mode, todo, and org-agenda config
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+        (sequence "WAITING(w@/!)" "INACTIVE(i)" "|" "CANCELLED(c@/!)")))
+
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
-;(load! "~/projects/emacs/testconfigadd.el")
+

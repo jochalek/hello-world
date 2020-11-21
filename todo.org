@@ -1,4 +1,0 @@
-* Inbox
-** TODO
-
-[[file:~/dotfiles/doom/.doom.d/config.el][file:~/dotfiles/doom/.doom.d/config.el]]
