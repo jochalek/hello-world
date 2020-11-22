@@ -33,6 +33,11 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
+;; Modeline setup
+(setq display-time-day-and-date t)
+(setq display-time-string-forms
+       '((propertize (format-time-string "%I:%M%p %a %y-%m-%d"))))
+(display-time)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
