@@ -72,6 +72,8 @@
 ;; Org-capture templates
 (setq org-my-anki-file "~/projects/anki/anki.org")
 (after! org
+  :init
+  (require 'org-habit)
         (add-to-list 'org-capture-templates
              '("a" "Anki basic"
                entry
@@ -188,10 +190,80 @@
           ":END:\n\n"
           )))
 
+;; Agenda
+(use-package! org-agenda
+  :init
+  (map! "<f1>" #'joch/switch-to-agenda)
+  (setq org-agenda-block-separator nil
+        org-agenda-start-with-log-mode t)
+  (defun joch/switch-to-agenda ()
+    (interactive)
+    (org-agenda nil " "))
+  (setq joch/org-agenda-directory (file-truename "~/projects/org/"))
+  :config
+  (defun joch/is-project-p ()
+  "Any task with a todo keyword subtask"
+  (save-restriction
+    (widen)
+    (let ((has-subtask)
+          (subtree-end (save-excursion (org-end-of-subtree t)))
+          (is-a-task (member (nth 2 (org-heading-components)) org-todo-keywords-1)))
+      (save-excursion
+        (forward-line 1)
+        (while (and (not has-subtask)
+                    (< (point) subtree-end)
+                    (re-search-forward "^\*+ " subtree-end t))
+          (when (member (org-get-todo-state) org-todo-keywords-1)
+            (setq has-subtask t))))
+      (and is-a-task has-subtask))))
+
+  (defun joch/skip-projects ()
+  "Skip trees that are projects"
+  (save-restriction
+    (widen)
+    (let ((next-headline (save-excursion (or (outline-next-heading) (point-max)))))
+      (cond
+       ((org-is-habit-p)
+        next-headline)
+       ((joch/is-project-p)
+        next-headline)
+       (t
+        nil)))))
+
+  (setq org-columns-default-format "%40ITEM(Task) %Effort(EE){:} %CLOCKSUM(Time Spent) %SCHEDULED(Scheduled) %DEADLINE(Deadline)")
+  (setq org-agenda-custom-commands `((" " "Agenda"
+                                      ((agenda ""
+                                               ((org-agenda-span 'week)
+                                                (org-deadline-warning-days 365)))
+                                       (todo "TODO"
+                                             ((org-agenda-overriding-header "Inbox")
+                                              (org-agenda-files '(,(concat joch/org-agenda-directory "todo.org")))))
+                                       ;(todo "TODO"
+                                       ;      ((org-agenda-overriding-header "Emails")
+                                       ;       (org-agenda-files '(,(concat org-agenda-directory "emails.org")))))
+                                       (todo "NEXT"
+                                             ((org-agenda-overriding-header "In Progress")
+                                              (org-agenda-files '(,(concat joch/org-agenda-directory "projects.org")))))
+                                       (todo "TODO"
+                                             ((org-agenda-overriding-header "Active Projects")
+                                              (org-agenda-skip-function #'joch/skip-projects)
+                                              (org-agenda-files '(,(concat joch/org-agenda-directory "projects.org")))))
+                                       (todo "TODO"
+                                             ((org-agenda-overriding-header "One-off Tasks")
+                                              (org-agenda-files '(,(concat joch/org-agenda-directory "notes.org")))
+                                              (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled)))))))))
+
 ;; org-mode, todo, and org-agenda config
 (setq org-todo-keywords
       '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
         (sequence "WAITING(w@/!)" "INACTIVE(i)" "|" "CANCELLED(c@/!)")))
+
+;; org-mode config
+(setq org-tag-alist '(("@errand" . ?e)
+                      ("@school" . ?s)
+                      ("@home" . ?h)
+                      (:newline)
+                      ("CANCELLED" . ?c)))
 
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
