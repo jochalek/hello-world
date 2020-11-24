@@ -92,7 +92,7 @@
         (add-to-list 'org-capture-templates
              '("i" "Inbox"
                entry
-               (file "~/projects/org/todo.org")
+               (file+headline "~/projects/org/todo.org" "Inbox")
                "* TODO %?\n /Entered on/ %u")))
 
 ;; Enable beacon-mode to show my cursor everywhere
@@ -255,7 +255,7 @@
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "projects.org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "One-off Tasks")
-                                              (org-agenda-files '(,(concat joch/org-agenda-directory "notes.org")))
+                                              (org-agenda-files '(,(concat joch/org-agenda-directory "personal.org")))
                                               (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled)))))))))
 
 (defvar joch/org-agenda-bulk-process-key ?f
