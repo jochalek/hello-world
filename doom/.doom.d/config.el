@@ -88,7 +88,12 @@
              '("m" "Meeting"
                entry
                (file org-default-notes-file)
-               "* Meeting with %? :MEETING:\n" :clock-in t :clock-resume t)))
+               "* Meeting with %? :MEETING:\n" :clock-in t :clock-resume t))
+        (add-to-list 'org-capture-templates
+             '("i" "Inbox"
+               entry
+               (file "~/projects/org/todo.org")
+               "* TODO %?\n /Entered on/ %u")))
 
 ;; Enable beacon-mode to show my cursor everywhere
 (beacon-mode 1)
@@ -252,6 +257,83 @@
                                              ((org-agenda-overriding-header "One-off Tasks")
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "notes.org")))
                                               (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled)))))))))
+
+(defvar joch/org-agenda-bulk-process-key ?f
+  "Default key for bulk processing inbox items.")
+
+(defun joch/org-process-inbox ()
+  "Called in org-agenda-mode, processes all inbox items."
+  (interactive)
+  (org-agenda-bulk-mark-regexp "inbox:")
+  (joch/bulk-process-entries))
+
+(defvar joch/org-current-effort "1:00"
+  "Current effort for agenda items.")
+
+(defun joch/my-org-agenda-set-effort (effort)
+  "Set the effort property for the current headline."
+  (interactive
+   (list (read-string (format "Effort [%s]: " joch/org-current-effort) nil nil joch/org-current-effort)))
+  (setq joch/org-current-effort effort)
+  (org-agenda-check-no-diary)
+  (let* ((hdmarker (or (org-get-at-bol 'org-hd-marker)
+                       (org-agenda-error)))
+         (buffer (marker-buffer hdmarker))
+         (pos (marker-position hdmarker))
+         (inhibit-read-only t)
+         newhead)
+    (org-with-remote-undo buffer
+      (with-current-buffer buffer
+        (widen)
+        (goto-char pos)
+        (org-show-context 'agenda)
+        (funcall-interactively 'org-set-effort nil joch/org-current-effort)
+        (end-of-line 1)
+        (setq newhead (org-get-heading)))
+      (org-agenda-change-all-lines newhead hdmarker))))
+
+(defun joch/org-agenda-process-inbox-item ()
+  "Process a single item in the org-agenda."
+  (org-with-wide-buffer
+   (org-agenda-set-tags)
+   (org-agenda-priority)
+   (call-interactively 'joch/my-org-agenda-set-effort)
+   (org-agenda-refile nil nil t)))
+
+(defun joch/bulk-process-entries ()
+  (if (not (null org-agenda-bulk-marked-entries))
+      (let ((entries (reverse org-agenda-bulk-marked-entries))
+            (processed 0)
+            (skipped 0))
+        (dolist (e entries)
+          (let ((pos (text-property-any (point-min) (point-max) 'org-hd-marker e)))
+            (if (not pos)
+                (progn (message "Skipping removed entry at %s" e)
+                       (cl-incf skipped))
+              (goto-char pos)
+              (let (org-loop-over-headlines-in-active-region) (funcall 'joch/org-agenda-process-inbox-item))
+              ;; `post-command-hook' is not run yet.  We make sure any
+              ;; pending log note is processed.
+              (when (or (memq 'org-add-log-note (default-value 'post-command-hook))
+                        (memq 'org-add-log-note post-command-hook))
+                (org-add-log-note))
+              (cl-incf processed))))
+        (org-agenda-redo)
+        (unless org-agenda-persistent-marks (org-agenda-bulk-unmark-all))
+        (message "Acted on %d entries%s%s"
+                 processed
+                 (if (= skipped 0)
+                     ""
+                   (format ", skipped %d (disappeared before their turn)"
+                           skipped))
+                 (if (not org-agenda-persistent-marks) "" " (kept marked)")))))
+
+(setq org-agenda-bulk-custom-functions `((,joch/org-agenda-bulk-process-key jo
+ch/org-agenda-process-inbox-item)))
+
+(map! :map org-agenda-mode-map
+      "r" #'joch/org-process-inbox
+      "R" #'org-agenda-refile)
 
 ;; org-mode, todo, and org-agenda config
 (setq org-todo-keywords
