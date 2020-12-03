@@ -90,6 +90,6 @@
 ;;   :recipe (:host github :repo "non-Jedi/lsp-julia"
 ;;            :files (:defaults "languageserver")))
 (package! eglot-jl)
-(package! ob-ess-julia
-  :recipe (:host github :repo "frederic-santos/ob-ess-julia"
-           :files ("*.el")))
+(package! ob-ess-julia)
+  ;; :recipe (:host github :repo "frederic-santos/ob-ess-julia"
+  ;;          :files ("*.el")))
