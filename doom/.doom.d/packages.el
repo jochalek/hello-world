@@ -62,6 +62,10 @@
 (package! ox-texinfo+
   :recipe (:host github :repo "tarsius/ox-texinfo-plus"))
 
+; CV support for tex
+(package! org-cv
+  :recipe (:host gitlab :repo "Titan-C/org-cv"))
+
 ; Themes
 (package! less-theme
   :recipe (:host gitlab :repo "nobiot/less-theme"

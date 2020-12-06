@@ -371,6 +371,10 @@
                       (:newline)
                       ("CANCELLED" . ?c)))
 
+;; org-cv export config
+(use-package! ox-moderncv
+    :init (require 'ox-moderncv))
+
 ;; Load ob-ess-julia and dependencies
 ;; (use-package ob-ess-julia
 ;;   :ensure t
