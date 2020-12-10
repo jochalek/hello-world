@@ -93,7 +93,12 @@
              '("i" "Inbox"
                entry
                (file+headline "~/projects/org/todo.org" "Inbox")
-               "* TODO %?\n /Entered on/ %u")))
+               "* TODO %?\n /Entered on/ %u"))
+        (add-to-list 'org-capture-templates
+                     '("d" "Daily Check-in"
+                       entry
+                       (file+olp+datetree +org-capture-journal-file)
+                       "* %U Daily Check-in\n** Three things I am grateful for\n1. %?\n** I am looking forward to\n** One thing I can do today no matter what\n- [ ]\n** Most important thing to focus on today" :prepend t)))
 
 ;; Enable beacon-mode to show my cursor everywhere
 (beacon-mode 1)
