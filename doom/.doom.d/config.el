@@ -27,7 +27,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/projects/org")
+(setq org-directory "~/Dropbox/org")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -92,7 +92,7 @@
         (add-to-list 'org-capture-templates
              '("i" "Inbox"
                entry
-               (file+headline "~/projects/org/todo.org" "Inbox")
+               (file+headline "~/Dropbox/org/todo.org" "Inbox")
                "* TODO %?\n /Entered on/ %u"))
         (add-to-list 'org-capture-templates
                      '("d" "Daily Check-in"
@@ -117,7 +117,7 @@
         :desc "org-roam-find-file" "f" #'org-roam-find-file
         :desc "org-roam-show-graph" "g" #'org-roam-show-graph
         :desc "org-roam-capture" "c" #'org-roam-capture)
-  (setq org-roam-directory (file-truename "~/projects/org-roam")
+  (setq org-roam-directory (file-truename "~/Dropbox/org-roam")
         org-roam-db-gc-threshold most-positive-fixnum
         org-roam-graph-exclude-matcher "personal"
         org-roam-tag-sources '(prop last-directory)
@@ -154,7 +154,7 @@
   :after org-protocol)
 
 (use-package! org-roam-bibtex
-  :after (org-roam)
+  :after org-roam
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :config
   (setq orb-preformat-keywords
@@ -179,10 +179,11 @@
 
 (use-package! bibtex-completion
   :config
-  (setq bibtex-completion-notes-path "~/projects/org-roam"
-        bibtex-completion-bibliography "~/projects/org-roam/biblio.bib"
+  (setq bibtex-completion-notes-path "~/Dropbox/org-roam"
+        bibtex-completion-bibliography "~/Dropbox/org-roam/biblio.bib"
         bibtex-completion-pdf-field "file"
-        bibtex-completion-notes-path "~/projects/lit/"
+        bibtex-completion-notes-path "~/Dropbox/lit/litnotes"
+        bibtex-completion-library-path "~/Dropbox/lit/"
         bibtex-completion-notes-template-multiple-files
          (concat
           "#+title: ${title}\n"
@@ -200,7 +201,15 @@
           ":END:\n\n"
           )))
 
-;; Agenda
+;; Citation configs
+(setq reftex-default-bibliography '("~/Dropbox/org-roam/biblio.bib"))
+
+;; see org-ref for use of these variables
+(setq org-ref-bibliography-notes "~/Dropbox/lit/litnotes.org"
+      org-ref-default-bibliography '("~/Dropbox/org-roam/biblio.bib")
+      org-ref-pdf-directory "~/Dropbox/lit/")
+
+;; Agenda config
 (use-package! org-agenda
   :init
   (map! "<f1>" #'joch/switch-to-agenda)
@@ -209,7 +218,7 @@
   (defun joch/switch-to-agenda ()
     (interactive)
     (org-agenda nil " "))
-  (setq joch/org-agenda-directory (file-truename "~/projects/org/"))
+  (setq joch/org-agenda-directory (file-truename "~/Dropbox/org/"))
   :config
   (defun joch/is-project-p ()
   "Any task with a todo keyword subtask"
@@ -391,6 +400,28 @@
 ;;   ;; Link this language to ess-julia-mode (although it should be done by default):
 ;;   (setq org-src-lang-modes
 ;;         (append org-src-lang-modes '(("ess-julia" . ess-julia)))))
+
+;; latex to pdf with bibliography
+(setq org-latex-pdf-process
+    '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
+
+;; Encryption
+(require 'org-crypt)
+; Encrypt all entries before saving
+(org-crypt-use-before-save-magic)
+(setq org-tags-exclude-from-inheritance (quote ("crypt")))
+; GPG key to use for encryption
+;(setq org-crypt-key nil)
+;; Either the Key ID or set to nil to use symmetric encryption.
+
+(setq auto-save-default nil)
+;; Auto-saving does not cooperate with org-crypt.el: so you need to
+;; turn it off if you plan to use org-crypt.el quite often.  Otherwise,
+;; you'll get an (annoying) message each time you start Org.
+
+;; To turn it off only locally, you can insert this:
+;;
+;; # -*- buffer-auto-save-file-name: nil; -*-
 
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
