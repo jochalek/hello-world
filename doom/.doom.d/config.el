@@ -263,7 +263,7 @@
                                        ;      ((org-agenda-overriding-header "Emails")
                                        ;       (org-agenda-files '(,(concat org-agenda-directory "emails.org")))))
                                        (todo "NEXT"
-                                             ((org-agenda-overriding-header "In Progress")
+                                             ((org-agenda-overriding-header "Up Next")
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "projects.org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Active Projects")
