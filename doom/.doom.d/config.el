@@ -423,5 +423,14 @@
 ;;
 ;; # -*- buffer-auto-save-file-name: nil; -*-
 
+;; Evil-mode config
+;; I want evil to navigate visual lines on the "screen" not by "in the computer" lines.
+(use-package! evil
+  :init
+  (setq evil-respect-visual-line-mode t)
+  :config
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
+
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
