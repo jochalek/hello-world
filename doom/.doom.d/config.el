@@ -226,7 +226,7 @@
 ;; Agenda config
 (use-package! org-agenda
   :init
-  (map! "<f12>" #'joch/switch-to-agenda)
+  (map! "<f1>" #'joch/switch-to-agenda)
   (setq org-agenda-block-separator nil
         org-agenda-start-with-log-mode t)
   (defun joch/switch-to-agenda ()
@@ -428,8 +428,8 @@
 
 ;; Random performance improvement attempts
 (setq-default bidi-paragraph-direction 'left-to-right)
-;; (if (version<= "27.1" emacs-version)
-;;     (setq bidi-inhibit-bpa t))
+(setq bidi-inhibit-bpa t)
+(global-so-long-mode 1)
 
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
