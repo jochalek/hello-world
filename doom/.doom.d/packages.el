@@ -77,7 +77,7 @@
 
 ; Academic
 ;(package! ivy-bibtex)
-;(package! pandoc-mode)
+(package! pandoc-mode)
 (package! pdf-tools)
 (package! org-noter)
 (package! org-ref)

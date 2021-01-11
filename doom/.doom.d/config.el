@@ -184,6 +184,7 @@
         bibtex-completion-pdf-field "file"
         bibtex-completion-notes-path "~/Dropbox/lit/litnotes"
         bibtex-completion-library-path "~/Dropbox/lit/"
+        ;bibtex-completion-pdf-open-function 'org-open-file
         bibtex-completion-notes-template-multiple-files
          (concat
           "#+title: ${title}\n"
@@ -202,17 +203,30 @@
           )))
 
 ;; Citation configs
-(setq reftex-default-bibliography '("~/Dropbox/org-roam/biblio.bib"))
+;; (setq reftex-default-bibliography '("~/Dropbox/org-roam/biblio.bib"))
 
 ;; see org-ref for use of these variables
-(setq org-ref-bibliography-notes "~/Dropbox/lit/litnotes.org"
-      org-ref-default-bibliography '("~/Dropbox/org-roam/biblio.bib")
-      org-ref-pdf-directory "~/Dropbox/lit/")
+(use-package! org-ref
+  :config
+  (setq org-ref-bibliography-notes "~/Dropbox/lit/litnotes.org"
+  org-ref-default-bibliography '("~/Dropbox/org-roam/biblio.bib")
+  org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
+  ;org-ref-open-pdf-function 'bibtex-completion-pdf-open-function
+  org-ref-notes-function 'orb-edit-notes))
 
+(tooltip-mode 1)
+
+(use-package! org-noter
+  :after
+  (:any org pdf-view))
+
+;; Pandoc mode to convert org files to other formats such as .docx, .md, or .pdf via LaTex
+;(add-hook 'text-mode-hook 'pandoc-mode)
+;(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 ;; Agenda config
 (use-package! org-agenda
   :init
-  (map! "<f1>" #'joch/switch-to-agenda)
+  (map! "<f12>" #'joch/switch-to-agenda)
   (setq org-agenda-block-separator nil
         org-agenda-start-with-log-mode t)
   (defun joch/switch-to-agenda ()
@@ -264,7 +278,8 @@
                                        ;       (org-agenda-files '(,(concat org-agenda-directory "emails.org")))))
                                        (todo "NEXT"
                                              ((org-agenda-overriding-header "Up Next")
-                                              (org-agenda-files '(,(concat joch/org-agenda-directory "projects.org")))))
+                                              (org-agenda-files (quote ("~/Dropbox/org/personal.org"
+                                                                       "~/Dropbox/org/projects.org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Active Projects")
                                               (org-agenda-skip-function #'joch/skip-projects)
@@ -273,29 +288,6 @@
                                              ((org-agenda-overriding-header "One-off Tasks")
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "personal.org")))
                                               (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled)))))))))
-      ;; '(("o" "My Agenda"
-      ;;    ((todo "TODO" (
-      ;;                 (org-agenda-overriding-header "⚡ TO DO:\n")
-      ;;                 (org-agenda-remove-tags t)
-      ;;                 (org-agenda-prefix-format "  %-2i %-13b")
-      ;;                 (org-agenda-todo-keyword-format "")))
-      ;;     (agenda "" (
-      ;;                 (org-agenda-skip-scheduled-if-done t)
-      ;;                 (org-agenda-skip-timestamp-if-done t)
-      ;;                 (org-agenda-skip-deadline-if-done t)
-      ;;                 (org-agenda-start-day "+0d")
-      ;;                 (org-agenda-span 5)
-      ;;                 (org-agenda-overriding-header "⚡ SCHEDULE:\n")
-      ;;                 (org-agenda-repeating-timestamp-show-all nil)
-      ;;                 (org-agenda-remove-tags t)
-      ;;                 (org-agenda-prefix-format "  %-3i  %-15b%t %s")
-      ;;                  ;; (concat "  %-3i  %-15b %t%s" org-agenda-hidden-separator))
-      ;;                 (org-agenda-todo-keyword-format " ☐ ")
-      ;;                 (org-agenda-time)
-      ;;                 (org-agenda-current-time-string "⮜┈┈┈┈┈┈┈ now")
-      ;;                 ;; (org-agenda-scheduled-leaders '("" ""))
-      ;;                 ;; (org-agenda-deadline-leaders '("" ""))
-      ;;                 (org-agenda-time-grid (quote ((require-timed remove-match) (0900 2100) "      " "┈┈┈┈┈┈┈┈┈┈┈┈┈"))))))))))
 
 (defvar joch/org-agenda-bulk-process-key ?f
   "Default key for bulk processing inbox items.")
@@ -372,6 +364,7 @@
 (map! :map org-agenda-mode-map
       "r" #'joch/org-process-inbox
       "R" #'org-agenda-refile)
+(map! :map global-map "<f6>" #'helm-bibtex)
 
 ;; org-mode, todo, and org-agenda config
 (setq org-todo-keywords
@@ -402,8 +395,9 @@
 ;;         (append org-src-lang-modes '(("ess-julia" . ess-julia)))))
 
 ;; latex to pdf with bibliography
+(after! org-latex
 (setq org-latex-pdf-process
-    '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
+    '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f")))
 
 ;; Encryption
 (require 'org-crypt)
@@ -431,6 +425,11 @@
   :config
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
+
+;; Random performance improvement attempts
+(setq-default bidi-paragraph-direction 'left-to-right)
+;; (if (version<= "27.1" emacs-version)
+;;     (setq bidi-inhibit-bpa t))
 
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
