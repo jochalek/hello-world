@@ -97,3 +97,7 @@
 (package! ob-ess-julia)
   ;; :recipe (:host github :repo "frederic-santos/ob-ess-julia"
   ;;          :files ("*.el")))
+
+(package! nano-emacs
+  :recipe (:host github :repo "rougier/nano-emacs"
+           :files ("*.el")))

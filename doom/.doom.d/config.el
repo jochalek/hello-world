@@ -23,7 +23,12 @@
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq
+ doom-theme 'zaiste
+ doom-font (font-spec :family "Iosevka Term SS04" :size 24 :weight 'light)
+ doom-big-font (font-spec :family "Iosevka Term SS04" :size 36)
+ doom-variable-pitch-font (font-spec :family "SF Pro Text")
+ )
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -436,6 +441,9 @@
 ;; (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 ;; ;(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 ;; (setq scroll-step 1) ;; keyboard scroll one line at a time
+
+;; Mode for clean writing
+(require 'nano-writer)
 
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
