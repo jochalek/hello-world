@@ -70,9 +70,9 @@
 (setq hugo-base-dir "~/projects/hugo-project")
 
 ;; for native-comp branch
-(setq comp-async-jobs-number 4 ;; not using all cores
-      comp-deferred-compilation t
-      comp-deferred-compilation-black-list '())
+;; (setq comp-async-jobs-number 4 ;; not using all cores
+;;       comp-deferred-compilation t
+;;       comp-deferred-compilation-black-list '())
 
 ;; Org-capture templates
 (setq org-my-anki-file "~/projects/anki/anki.org")
@@ -80,15 +80,15 @@
   :init
   (require 'org-habit)
         (add-to-list 'org-capture-templates
-             '("a" "Anki basic"
+             '("A" "Anki basic"
                entry
                (file+headline org-my-anki-file "Dispatch Shelf")
-               "* %<%H:%M>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n%x\n"))
+               "* %<%H:%M>   \n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n%x\n"))
         (add-to-list 'org-capture-templates
-             '("A" "Anki cloze"
+             '("a" "Anki cloze"
                entry
                (file+headline org-my-anki-file "Dispatch Shelf")
-               "* %<%H:%M>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%i%?\n** Extra\n"))
+               "* %<%H:%M>   \n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze-AnKingMasterClone\n:ANKI_DECK: Mega\n:ANKI_TAGS:\n:END:\n** Text\n%i%?\n** Extra\n"))
         (add-to-list 'org-capture-templates
              '("m" "Meeting"
                entry
@@ -444,6 +444,22 @@
 
 ;; Mode for clean writing
 (require 'nano-writer)
+
+;; Avoid #file.org# to appear
+(auto-save-visited-mode)
+(setq create-lockfiles nil)
+;; Avoid filename.ext~ to appear
+(setq make-backup-files nil)
+
+;; anki-editor config
+(use-package! anki-editor
+  :init
+  (setq anki-editor-org-tags-as-anki-tags nil)
+  (map! :mode anki-editor-mode
+        :leader
+        :prefix "a"
+        :desc "cloze region ARGS" "c" #'anki-editor-cloze-region
+        :desc "cloze word" "w" #'anki-editor-cloze-dwim))
 
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
