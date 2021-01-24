@@ -50,8 +50,8 @@
 ;(unpin! t)
 
 ; For org-roam second brain
-(package! org-roam
-  :recipe (:host github :repo "org-roam/org-roam"))
+;; (package! org-roam
+;;   :recipe (:host github :repo "org-roam/org-roam"))
 (package! org-roam-bibtex
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))
 (package! company-org-roam
@@ -79,7 +79,7 @@
 ;(package! ivy-bibtex)
 (package! pandoc-mode)
 (package! pdf-tools)
-(package! org-noter)
+;(package! org-noter)
 (package! org-ref)
 ;(package! helm-bibtex)
 
@@ -101,3 +101,7 @@
 (package! nano-emacs
   :recipe (:host github :repo "rougier/nano-emacs"
            :files ("*.el")))
+
+(package! esup)
+
+;(package! jupyter)

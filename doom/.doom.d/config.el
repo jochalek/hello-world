@@ -42,7 +42,10 @@
 (setq display-time-day-and-date t)
 (setq display-time-string-forms
        '((propertize (format-time-string "%I:%M%p %a %y-%m-%d"))))
-(display-time)
+(use-package! time
+  :defer t
+  :config
+  (display-time))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -65,7 +68,7 @@
 ;(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
 ;(setq +doom-dashboard-banner-file (expand-file-name "banner.png" doom-private-dir))
 (setq inhibit-splash-screen t)
-(add-hook 'after-init-hook #'org-agenda-list)
+;;(add-hook 'after-init-hook #'org-agenda-list)
 ;; ox-hugo settings
 (setq hugo-base-dir "~/projects/hugo-project")
 
@@ -103,13 +106,29 @@
                      '("d" "Daily Check-in"
                        entry
                        (file+olp+datetree +org-capture-journal-file)
-                       "* %U Daily Check-in\n** Three things I am grateful for\n1. %?\n** I am looking forward to\n** One thing I can do today no matter what\n- [ ]\n** Most important thing to focus on today" :prepend t)))
+                       "* %U Daily Check-in\n** Three things I am grateful for\n1. %?\n** I am looking forward to\n** One thing I can do today no matter what\n- [ ]\n** Most important thing to focus on today" :prepend t))
+        :config
+;; org-mode, todo, and org-agenda config
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+        (sequence "WAITING(w@/!)" "INACTIVE(i)" "|" "CANCELLED(c@/!)")))
+
+;; org-mode config
+(setq org-tag-alist '(("@errand" . ?e)
+                      ("@school" . ?s)
+                      ("@home" . ?h)
+                      (:newline)
+                      ("CANCELLED" . ?c)))
+        )
 
 ;; Enable beacon-mode to show my cursor everywhere
-(beacon-mode 1)
+(use-package! beacon
+  :config
+  (beacon-mode 1))
 
 ;; org-roam config
 (use-package! org-roam
+  :defer t
   :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
   :hook
   (after-init . org-roam-mode)
@@ -183,7 +202,9 @@
            :unnarrowed t))))
 
 (use-package! bibtex-completion
+  :after org
   :config
+  (map! :map global-map "<f6>" #'helm-bibtex)
   (setq bibtex-completion-notes-path "~/Dropbox/org-roam"
         bibtex-completion-bibliography "~/Dropbox/org-roam/biblio.bib"
         bibtex-completion-pdf-field "file"
@@ -212,14 +233,15 @@
 
 ;; see org-ref for use of these variables
 (use-package! org-ref
+  :after org
   :config
   (setq org-ref-bibliography-notes "~/Dropbox/lit/litnotes.org"
   org-ref-default-bibliography '("~/Dropbox/org-roam/biblio.bib")
   org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
   ;org-ref-open-pdf-function 'bibtex-completion-pdf-open-function
-  org-ref-notes-function 'orb-edit-notes))
-
-(tooltip-mode 1)
+  org-ref-notes-function 'orb-edit-notes)
+  (tooltip-mode 1)
+  )
 
 (use-package! org-noter
   :after
@@ -230,7 +252,8 @@
 ;(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 ;; Agenda config
 (use-package! org-agenda
-  :init
+  :defer t
+  :config
   (map! "<f1>" #'joch/switch-to-agenda)
   (setq org-agenda-block-separator nil
         org-agenda-start-with-log-mode t)
@@ -238,7 +261,6 @@
     (interactive)
     (org-agenda nil " "))
   (setq joch/org-agenda-directory (file-truename "~/Dropbox/org/"))
-  :config
   (defun joch/is-project-p ()
   "Any task with a todo keyword subtask"
   (save-restriction
@@ -293,7 +315,7 @@
                                              ((org-agenda-overriding-header "One-off Tasks")
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "personal.org")))
                                               (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled)))))))))
-
+(after! org-agenda
 (defvar joch/org-agenda-bulk-process-key ?f
   "Default key for bulk processing inbox items.")
 
@@ -369,23 +391,12 @@
 (map! :map org-agenda-mode-map
       "r" #'joch/org-process-inbox
       "R" #'org-agenda-refile)
-(map! :map global-map "<f6>" #'helm-bibtex)
-
-;; org-mode, todo, and org-agenda config
-(setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-        (sequence "WAITING(w@/!)" "INACTIVE(i)" "|" "CANCELLED(c@/!)")))
-
-;; org-mode config
-(setq org-tag-alist '(("@errand" . ?e)
-                      ("@school" . ?s)
-                      ("@home" . ?h)
-                      (:newline)
-                      ("CANCELLED" . ?c)))
+)
 
 ;; org-cv export config
 (use-package! ox-moderncv
-    :init (require 'ox-moderncv))
+  :defer t
+  :init (require 'ox-moderncv))
 
 ;; Load ob-ess-julia and dependencies
 ;; (use-package ob-ess-julia
@@ -401,17 +412,18 @@
 
 ;; latex to pdf with bibliography
 (after! org-latex
-(setq org-latex-pdf-process
-    '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f")))
+  (setq org-latex-pdf-process
+        '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f")))
 
 ;; Encryption
-(require 'org-crypt)
+(after! org-crypt
 ; Encrypt all entries before saving
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance (quote ("crypt")))
 ; GPG key to use for encryption
 ;(setq org-crypt-key nil)
 ;; Either the Key ID or set to nil to use symmetric encryption.
+  )
 
 (setq auto-save-default nil)
 ;; Auto-saving does not cooperate with org-crypt.el: so you need to
@@ -424,17 +436,18 @@
 
 ;; Evil-mode config
 ;; I want evil to navigate visual lines on the "screen" not by "in the computer" lines.
-(use-package! evil
-  :init
+(after! evil
   (setq evil-respect-visual-line-mode t)
-  :config
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
 
 ;; Random performance improvement attempts
 (setq-default bidi-paragraph-direction 'left-to-right)
 (setq bidi-inhibit-bpa t)
-(global-so-long-mode 1)
+(use-package! so-long
+  :defer t
+  :config
+  (global-so-long-mode 1))
 
 ;; ;; scroll one line at a time (less "jumpy" than defaults)
 ;; (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
@@ -443,7 +456,8 @@
 ;; (setq scroll-step 1) ;; keyboard scroll one line at a time
 
 ;; Mode for clean writing
-(require 'nano-writer)
+(use-package! nano-writer
+  :defer t)
 
 ;; Avoid #file.org# to appear
 (auto-save-visited-mode)
@@ -453,6 +467,7 @@
 
 ;; anki-editor config
 (use-package! anki-editor
+  :defer t
   :init
   (setq anki-editor-org-tags-as-anki-tags nil)
   (map! :mode anki-editor-mode
