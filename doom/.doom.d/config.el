@@ -78,7 +78,6 @@
 ;;       comp-deferred-compilation-black-list '())
 
 ;; Org-capture templates
-(setq org-my-anki-file "~/projects/anki/anki.org")
 (after! org
   :init
   (require 'org-habit)
@@ -107,6 +106,7 @@
                        entry
                        (file+olp+datetree +org-capture-journal-file)
                        "* %U Daily Check-in\n** Three things I am grateful for\n1. %?\n** I am looking forward to\n** One thing I can do today no matter what\n- [ ]\n** Most important thing to focus on today" :prepend t))
+        (setq org-my-anki-file "~/projects/anki/anki.org")
         :config
 ;; org-mode, todo, and org-agenda config
 (setq org-todo-keywords
@@ -127,9 +127,8 @@
   (beacon-mode 1))
 
 ;; org-roam config
-(use-package! org-roam
-  :defer t
-  :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
+(after! org-roam
+  ;; :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
   :hook
   (after-init . org-roam-mode)
   :init
@@ -141,7 +140,7 @@
         :desc "org-roam-find-file" "f" #'org-roam-find-file
         :desc "org-roam-show-graph" "g" #'org-roam-show-graph
         :desc "org-roam-capture" "c" #'org-roam-capture)
-  (setq org-roam-directory (file-truename "~/Dropbox/org-roam")
+  (setq org-roam-directory (file-truename "~/zettels/org-roam")
         org-roam-db-gc-threshold most-positive-fixnum
         org-roam-graph-exclude-matcher "personal"
         org-roam-tag-sources '(prop last-directory)
@@ -205,11 +204,11 @@
   :after org
   :config
   (map! :map global-map "<f6>" #'helm-bibtex)
-  (setq bibtex-completion-notes-path "~/Dropbox/org-roam"
-        bibtex-completion-bibliography "~/Dropbox/org-roam/biblio.bib"
+  (setq bibtex-completion-notes-path "~/zettels/org-roam"
+        bibtex-completion-bibliography "~/zettels/org-roam/biblio.bib"
         bibtex-completion-pdf-field "file"
-        bibtex-completion-notes-path "~/Dropbox/lit/litnotes"
-        bibtex-completion-library-path "~/Dropbox/lit/"
+        bibtex-completion-notes-path "~/zettels/lit/litnotes"
+        bibtex-completion-library-path "~/zettels/lit/"
         ;bibtex-completion-pdf-open-function 'org-open-file
         bibtex-completion-notes-template-multiple-files
          (concat
@@ -229,14 +228,14 @@
           )))
 
 ;; Citation configs
-;; (setq reftex-default-bibliography '("~/Dropbox/org-roam/biblio.bib"))
+;; (setq reftex-default-bibliography '("~/zettels/org-roam/biblio.bib"))
 
 ;; see org-ref for use of these variables
 (use-package! org-ref
   :after org
   :config
-  (setq org-ref-bibliography-notes "~/Dropbox/lit/litnotes.org"
-  org-ref-default-bibliography '("~/Dropbox/org-roam/biblio.bib")
+  (setq org-ref-bibliography-notes "~/zettels/lit/litnotes.org"
+  org-ref-default-bibliography '("~/zettels/org-roam/biblio.bib")
   org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
   ;org-ref-open-pdf-function 'bibtex-completion-pdf-open-function
   org-ref-notes-function 'orb-edit-notes)
@@ -247,9 +246,10 @@
   :after
   (:any org pdf-view))
 
-;; Pandoc mode to convert org files to other formats such as .docx, .md, or .pdf via LaTex
-;(add-hook 'text-mode-hook 'pandoc-mode)
-;(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+;; ;; Pandoc mode to convert org files to other formats such as .docx, .md, or .pdf via LaTex
+;; ;(add-hook 'text-mode-hook 'pandoc-mode)
+;; ;(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+
 ;; Agenda config
 (use-package! org-agenda
   :defer t
@@ -395,10 +395,10 @@
 
 ;; org-cv export config
 (use-package! ox-moderncv
-  :defer t
+  :after org
   :init (require 'ox-moderncv))
 
-;; Load ob-ess-julia and dependencies
+;; ;; Load ob-ess-julia and dependencies
 ;; (use-package ob-ess-julia
 ;;   :ensure t
 ;;   :config
@@ -424,8 +424,13 @@
 ;(setq org-crypt-key nil)
 ;; Either the Key ID or set to nil to use symmetric encryption.
   )
-
 (setq auto-save-default nil)
+;; Avoid #file.org# to appear
+;(auto-save-visited-mode)
+(setq create-lockfiles nil)
+;; Avoid filename.ext~ to appear
+(setq make-backup-files nil)
+
 ;; Auto-saving does not cooperate with org-crypt.el: so you need to
 ;; turn it off if you plan to use org-crypt.el quite often.  Otherwise,
 ;; you'll get an (annoying) message each time you start Org.
@@ -449,21 +454,9 @@
   :config
   (global-so-long-mode 1))
 
-;; ;; scroll one line at a time (less "jumpy" than defaults)
-;; (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-;; (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-;; ;(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-;; (setq scroll-step 1) ;; keyboard scroll one line at a time
-
 ;; Mode for clean writing
 (use-package! nano-writer
   :defer t)
-
-;; Avoid #file.org# to appear
-(auto-save-visited-mode)
-(setq create-lockfiles nil)
-;; Avoid filename.ext~ to appear
-(setq make-backup-files nil)
 
 ;; anki-editor config
 (use-package! anki-editor
