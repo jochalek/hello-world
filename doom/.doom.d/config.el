@@ -129,9 +129,9 @@
 ;; org-roam config
 (after! org-roam
   ;; :commands (org-roam-insert org-roam-find-file org-roam-switch-to-buffer org-roam)
-  :hook
-  (after-init . org-roam-mode)
-  :init
+  ;; :hook
+  ;; (after-init . org-roam-mode)
+  ;; :init
   (map! :leader
         :prefix "n"
         :desc "org-roam" "l" #'org-roam
@@ -145,7 +145,7 @@
         org-roam-graph-exclude-matcher "personal"
         org-roam-tag-sources '(prop last-directory)
         org-id-link-to-org-use-id t)
-  :config
+  ;; :config
   (setq org-roam-capture-templates
         '(("n" "normal" plain (function org-roam--capture-get-point)
            "%?"
