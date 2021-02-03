@@ -1,4 +1,3 @@
-# This repo contains my dotfile configs
+# Dotfiles
 
-It is useful to retain my configuration across workstations.
-
+This repo allows me to keep the same configuration across multiple workstations.
