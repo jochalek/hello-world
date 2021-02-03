@@ -56,7 +56,7 @@
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))
 (package! company-org-roam
   :recipe (:host github :repo "jethrokuan/company-org-roam"))
-(package! org-download)
+;; (package! org-download)
 
 ; For hosting my Second Brain
 (package! ox-texinfo+
@@ -104,4 +104,7 @@
 
 (package! esup)
 
+(package! rg)
+
+(unpin! org-mode)
 ;(package! jupyter)

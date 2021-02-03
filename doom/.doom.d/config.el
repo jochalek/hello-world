@@ -22,13 +22,13 @@
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 
-;; `load-theme' function. This is the default:
-(setq
- doom-theme 'zaiste
- doom-font (font-spec :family "Iosevka Term SS04" :size 24 :weight 'light)
- doom-big-font (font-spec :family "Iosevka Term SS04" :size 36)
- doom-variable-pitch-font (font-spec :family "SF Pro Text")
- )
+;; ;; `load-theme' function. This is the default:
+;; (setq
+;;  doom-theme 'zaiste
+;;  doom-font (font-spec :family "Iosevka Term SS04" :size 24 :weight 'light)
+;;  doom-big-font (font-spec :family "Iosevka Term SS04" :size 36)
+;;  doom-variable-pitch-font (font-spec :family "SF Pro Text")
+;;  )
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -171,7 +171,8 @@
 #+title: ${title}
 - source :: ${ref}"
            :unnarrowed t)))
-  (set-company-backend! 'org-mode '(company-capf)))
+  (set-company-backend! 'org-mode '(company-capf))
+  )
 
 (use-package! org-roam-protocol
   :after org-protocol)
@@ -468,6 +469,31 @@
         :prefix "a"
         :desc "cloze region ARGS" "c" #'anki-editor-cloze-region
         :desc "cloze word" "w" #'anki-editor-cloze-dwim))
+
+(after! conda
+  (conda-env-initialize-interactive-shells))
+
+(after! jupyter
+  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+                                                       (:session . "/jpy:localhost#9001:py"))
+        org-babel-default-header-args:jupyter-julia  '((:async . "yes")
+                                                       (:session . "/jpy:localhost#9001:jl")))
+  (map! :mode org-mode
+        :leader
+        :prefix "j"
+        :desc "insert src block" "i" #'jupyter-org-insert-src-block))
+
+;; A regexp search for my braindump. Disabled because it eagerly loads.
+;; (use-package! rg
+;;   :defer t
+;;   :init
+;;   (rg-define-search joch/rg-braindump
+;;     "RipGrep my braindump."
+;;     :query ask
+;;     :format regexp
+;;     :files "everything"
+;;     :dir org-roam-directory
+;;     :confirm prefix))
 
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
