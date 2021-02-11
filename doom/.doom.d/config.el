@@ -22,13 +22,18 @@
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 
-;; ;; `load-theme' function. This is the default:
+;; `load-theme' function. These settings are configured locally due to screen size:
 ;; (setq
-;;  doom-theme 'zaiste
 ;;  doom-font (font-spec :family "Iosevka Term SS04" :size 24 :weight 'light)
 ;;  doom-big-font (font-spec :family "Iosevka Term SS04" :size 36)
 ;;  doom-variable-pitch-font (font-spec :family "SF Pro Text")
 ;;  )
+;; My attempt to change theme on startup based on day/evening.
+(setq doom-theme (if (and (string-greaterp (format-time-string "%I") "05")
+                     (string-equal (format-time-string "%p") "PM")
+                     t)
+ 'doom-one
+ 'zaiste))
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -43,7 +48,7 @@
 (setq display-time-string-forms
        '((propertize (format-time-string "%I:%M%p %a %y-%m-%d"))))
 (use-package! time
-  :defer t
+  :defer 10
   :config
   (display-time))
 
@@ -70,7 +75,7 @@
 (setq inhibit-splash-screen t)
 ;;(add-hook 'after-init-hook #'org-agenda-list)
 ;; ox-hugo settings
-(setq hugo-base-dir "~/projects/hugo-project")
+;(setq hugo-base-dir "~/projects/hugo-project")
 
 ;; for native-comp branch
 ;; (setq comp-async-jobs-number 4 ;; not using all cores
@@ -105,7 +110,7 @@
                      '("d" "Daily Check-in"
                        entry
                        (file+olp+datetree +org-capture-journal-file)
-                       "* %U Daily Check-in\n** Three things I am grateful for\n1. %?\n** I am looking forward to\n** One thing I can do today no matter what\n- [ ]\n** Most important thing to focus on today" :prepend t))
+                       "* %U Daily Check-in\n** Three things I am grateful for\n1. %?\n** I am looking forward to\n** One thing I can do today no matter what\n- [ ]\n** Most important thing to focus on today\n** Today's items" :prepend t))
         (setq org-my-anki-file "~/projects/anki/anki.org")
         :config
 ;; org-mode, todo, and org-agenda config
@@ -119,7 +124,8 @@
                       ("@home" . ?h)
                       (:newline)
                       ("CANCELLED" . ?c)))
-        )
+(global-set-key (kbd "C-c l") #'org-store-link)
+)
 
 ;; Enable beacon-mode to show my cursor everywhere
 (use-package! beacon
@@ -150,8 +156,9 @@
         '(("n" "normal" plain (function org-roam--capture-get-point)
            "%?"
            :file-name "${slug}"
-           :head "#+setupfile:./hugo_setup.org
+           :head "#+setupfile:../hugo_setup.org
 #+hugo_slug: ${slug}
+#+HUGO_DRAFT: true
 #+title: ${title}\n"
            :immediate-finish t
            :unnarrowed t)
