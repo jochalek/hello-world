@@ -84,7 +84,7 @@
 ;(package! helm-bibtex)
 
 ; Long form writing
-;(package! olivetti)
+(package! olivetti)
 
 ; Study tools
 (package! anki-editor)
@@ -102,9 +102,15 @@
   :recipe (:host github :repo "rougier/nano-emacs"
            :files ("*.el")))
 
+(package! visual-fill-column)
+
 (package! esup)
 
 (package! rg)
 
-(unpin! org-mode)
+(package! modus-themes)
+
+(package! writegood-mode)
+
+;; (unpin! org-mode)
 ;(package! jupyter)

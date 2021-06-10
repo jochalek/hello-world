@@ -31,17 +31,28 @@
 ;; My attempt to change theme on startup based on day/evening.
 (setq doom-theme (if (and (string-greaterp (format-time-string "%I") "05")
                      (string-equal (format-time-string "%p") "PM")
+                     (string-lessp (format-time-string "%I") "12")
                      t)
- 'doom-one
+ 'doom-dark+
  'zaiste))
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Dropbox/org")
+(setq org-directory "~/org")
+;; I'll want to use the diary functionality for scheduling non-tasks within
+;; org-agenda
+(setq diary-file "~/org/diary")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
+(dolist (mode '(org-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0)))
+  (add-hook mode (lambda () (vi-tilde-fringe-mode 0)))
+  (add-hook mode (lambda () (company-mode 0)))
+  (add-hook mode (lambda () (visual-fill-column-mode 1))))
+
+(setq recentf-max-saved-items 20)
 
 ;; Modeline setup
 (setq display-time-day-and-date t)
@@ -78,14 +89,17 @@
 ;(setq hugo-base-dir "~/projects/hugo-project")
 
 ;; for native-comp branch
-;; (setq comp-async-jobs-number 4 ;; not using all cores
-;;       comp-deferred-compilation t
-;;       comp-deferred-compilation-black-list '())
+(setq comp-async-jobs-number 4 ;; not using all cores
+      comp-deferred-compilation t
+      comp-deferred-compilation-black-list '())
 
 ;; Org-capture templates
 (after! org
   :init
   (require 'org-habit)
+  (require 'nano-writer)
+  (require 'visual-fill-column)
+  (add-hook 'writer-mode-hook #'visual-fill-column-mode)
         (add-to-list 'org-capture-templates
              '("A" "Anki basic"
                entry
@@ -104,7 +118,7 @@
         (add-to-list 'org-capture-templates
              '("i" "Inbox"
                entry
-               (file+headline "~/Dropbox/org/todo.org" "Inbox")
+               (file+headline "~/org/todo.org" "Inbox")
                "* TODO %?\n /Entered on/ %u"))
         (add-to-list 'org-capture-templates
                      '("d" "Daily Check-in"
@@ -125,6 +139,12 @@
                       (:newline)
                       ("CANCELLED" . ?c)))
 (global-set-key (kbd "C-c l") #'org-store-link)
+(setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                 (org-agenda-files :maxlevel . 9))))
+
+;; org-latex to pdf with bibliography
+(setq org-latex-pdf-process
+        '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
 )
 
 ;; Enable beacon-mode to show my cursor everywhere
@@ -265,10 +285,11 @@
   (map! "<f1>" #'joch/switch-to-agenda)
   (setq org-agenda-block-separator nil
         org-agenda-start-with-log-mode t)
+  (setq org-agenda-files (quote ("~/org")))
   (defun joch/switch-to-agenda ()
     (interactive)
     (org-agenda nil " "))
-  (setq joch/org-agenda-directory (file-truename "~/Dropbox/org/"))
+  (setq joch/org-agenda-directory (file-truename "~/org/"))
   (defun joch/is-project-p ()
   "Any task with a todo keyword subtask"
   (save-restriction
@@ -300,7 +321,29 @@
 
   (setq org-columns-default-format "%40ITEM(Task) %Effort(EE){:} %CLOCKSUM(Time Spent) %SCHEDULED(Scheduled) %DEADLINE(Deadline)")
   (setq org-agenda-custom-commands
-        `((" " "Agenda"
+        `((" " "Today Agenda"
+                                      ((agenda ""
+                                               (
+                                                (org-agenda-overriding-header "Today's Schedule:\n Views:z Filters:s\n")
+                                                (org-agenda-span 'day)
+                                                (org-agenda-start-day "+0d")
+                                                (org-deadline-warning-days 3)
+                                                ))
+                                       (todo "TODO"
+                                             ((org-agenda-overriding-header "Inbox")
+                                              (org-agenda-files '(,(concat joch/org-agenda-directory "todo.org")))))
+                                       (todo "NEXT"
+                                             ((org-agenda-overriding-header "Up Next")
+                                              (org-agenda-files (quote ("~/org")))))
+                                       (todo "TODO"
+                                             ((org-agenda-overriding-header "Active Projects")
+                                              (org-agenda-skip-function #'joch/skip-projects)
+                                              (org-agenda-files '(,(concat joch/org-agenda-directory "projects.org")))))
+                                       (todo "TODO"
+                                             ((org-agenda-overriding-header "Outstanding Tasks")
+                                              (org-agenda-files '(,(concat joch/org-agenda-directory "personal.org")))
+                                              (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))))
+         ("W" "Week Agenda"
                                       ((agenda ""
                                                ((org-agenda-span 'week)
                                                 (org-agenda-start-day "+0d")
@@ -308,13 +351,10 @@
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Inbox")
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "todo.org")))))
-                                       ;(todo "TODO"
-                                       ;      ((org-agenda-overriding-header "Emails")
-                                       ;       (org-agenda-files '(,(concat org-agenda-directory "emails.org")))))
                                        (todo "NEXT"
                                              ((org-agenda-overriding-header "Up Next")
-                                              (org-agenda-files (quote ("~/Dropbox/org/personal.org"
-                                                                       "~/Dropbox/org/projects.org")))))
+                                              (org-agenda-files (quote ("~/org/personal.org"
+                                                                       "~/org/projects.org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Active Projects")
                                               (org-agenda-skip-function #'joch/skip-projects)
@@ -322,7 +362,8 @@
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "One-off Tasks")
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "personal.org")))
-                                              (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled)))))))))
+                                              (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))))
+          )))
 (after! org-agenda
 (defvar joch/org-agenda-bulk-process-key ?f
   "Default key for bulk processing inbox items.")
@@ -418,11 +459,6 @@
 ;;   (setq org-src-lang-modes
 ;;         (append org-src-lang-modes '(("ess-julia" . ess-julia)))))
 
-;; latex to pdf with bibliography
-(after! org-latex
-  (setq org-latex-pdf-process
-        '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f")))
-
 ;; Encryption
 (after! org-crypt
 ; Encrypt all entries before saving
@@ -463,7 +499,7 @@
   (global-so-long-mode 1))
 
 ;; Mode for clean writing
-(use-package! nano-writer
+(use-package! nano-emacs
   :defer t)
 
 ;; anki-editor config
@@ -480,20 +516,9 @@
 (after! conda
   (conda-env-initialize-interactive-shells))
 
-(after! jupyter
-  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-                                                       (:session . "/jpy:localhost#9001:py"))
-        org-babel-default-header-args:jupyter-julia  '((:async . "yes")
-                                                       (:session . "/jpy:localhost#9001:jl")))
-  (map! :mode org-mode
-        :leader
-        :prefix "j"
-        :desc "insert src block" "i" #'jupyter-org-insert-src-block))
-
 ;; A regexp search for my braindump. Disabled because it eagerly loads.
 ;; (use-package! rg
-;;   :defer t
-;;   :init
+;;   :config
 ;;   (rg-define-search joch/rg-braindump
 ;;     "RipGrep my braindump."
 ;;     :query ask
@@ -502,5 +527,12 @@
 ;;     :dir org-roam-directory
 ;;     :confirm prefix))
 
+;; Julia config with lsp
+(setq lsp-julia-default-environment "~/.julia/environments/v1.6")
+(setq julia-repl-executable-records
+          '((default "julia")
+            (v1.6 "c:/Users/jocha/AppData/Local/Programs/Julia-1.6.1/bin/julia")))
+
+;; (setq explicit-shell-file-name "c:/Program Files/PowerShell/7/pwsh.exe")
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
