@@ -32,13 +32,20 @@
 ;; System specific settings
 ;; Ubuntu Desktop
 (when (string-equal (system-name) "justin-ubuntu-desktop")
-      (setq
-       doom-font (font-spec :family "DejaVu Sans Mono" :size 18 :weight 'light)
-       doom-big-font (font-spec :family "DejaVu Sans Mono" :size 24)
-       doom-variable-pitch-font (font-spec :family "DejaVu Sans")))
+  (setq
+   doom-font (font-spec :family "DejaVu Sans Mono" :size 18 :weight 'light)
+   doom-big-font (font-spec :family "DejaVu Sans Mono" :size 24)
+   doom-variable-pitch-font (font-spec :family "DejaVu Sans")))
 ;; Lenovo Laptop
 (when (string-equal (system-name) "PIEROGI")
-  (setq joch/placeholder "1")
+  (setq
+   doom-font (font-spec :family "Iosevka Term SS04" :size 24 :weight 'light)
+   doom-big-font (font-spec :family "Iosevka Term SS04" :size 36)
+   doom-variable-pitch-font (font-spec :family "SF Pro Text"))
+  (add-to-list 'exec-path "c:/Users/jocha/anaconda3") ;; Path to Python
+  (add-to-list 'exec-path "~/anaconda3/Library/bin") ;; Path to sqlite3 for org-roam
+  (setenv "LANG" "en_GB") ;; Set up spell checker using Hunspell
+  (setq ispell-program-name "~/bin/hunspell-1.3.2-3-w32-bin/bin/hunspell.exe")
   )
 
 ;; My attempt to change theme on startup based on day/evening.
