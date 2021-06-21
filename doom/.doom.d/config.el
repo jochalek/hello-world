@@ -28,6 +28,19 @@
 ;;  doom-big-font (font-spec :family "Iosevka Term SS04" :size 36)
 ;;  doom-variable-pitch-font (font-spec :family "SF Pro Text")
 ;;  )
+
+;; System specific settings
+;; Ubuntu Desktop
+(when (string-equal (system-name) "justin-ubuntu-desktop")
+      (setq
+       doom-font (font-spec :family "DejaVu Sans Mono" :size 18 :weight 'light)
+       doom-big-font (font-spec :family "DejaVu Sans Mono" :size 24)
+       doom-variable-pitch-font (font-spec :family "DejaVu Sans")))
+;; Lenovo Laptop
+(when (string-equal (system-name) "PIEROGI")
+  (setq joch/placeholder "1")
+  )
+
 ;; My attempt to change theme on startup based on day/evening.
 (setq doom-theme (if (and (string-greaterp (format-time-string "%I") "05")
                      (string-equal (format-time-string "%p") "PM")
@@ -119,6 +132,8 @@
              '("i" "Inbox"
                entry
                (file+headline "~/org/todo.org" "Inbox")
+               ;; (file+headline "/ssh:moron:/home/justin/projects/shared/org/todo.org" "Inbox")
+               ;; (file ,(expand-file-name "todo.org" org-directory))
                "* TODO %?\n /Entered on/ %u"))
         (add-to-list 'org-capture-templates
                      '("d" "Daily Check-in"
