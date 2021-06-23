@@ -555,6 +555,15 @@
           '((default "julia")
             (v1.6 "c:/Users/jocha/AppData/Local/Programs/Julia-1.6.1/bin/julia")))
 
+;; ERC config
+(setq erc-server "irc.libera.chat"
+      erc-nick "joch"
+      erc-user-full-name ""
+      erc-track-shorten-start 8
+      erc-autojoin-channels-alist '(("irc.libera.chat" "#systemcrafters" "#emacs"))
+      erc-kill-buffer-on-part t
+            erc-auto-query 'bury)
+
 ;; (setq explicit-shell-file-name "c:/Program Files/PowerShell/7/pwsh.exe")
 ;; Load local configuration
 (load! "~/.local/emacs/localconfig.el")
