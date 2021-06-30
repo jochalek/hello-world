@@ -558,7 +558,7 @@
 ;; ERC config
 (setq erc-server "irc.libera.chat"
       erc-nick "joch"
-      erc-user-full-name ""
+      erc-user-full-name "jochalek"
       erc-track-shorten-start 8
       erc-autojoin-channels-alist '(("irc.libera.chat" "#systemcrafters" "#emacs"))
       erc-kill-buffer-on-part t
