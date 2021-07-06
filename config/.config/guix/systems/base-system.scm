@@ -11,6 +11,7 @@
   #:use-module (gnu services docker)
   #:use-module (gnu services networking)
   #:use-module (gnu services virtualization)
+  #:use-module (gnu services sound)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages vim)
@@ -93,6 +94,7 @@
     (append
       (list (service gnome-desktop-service-type)
             (service openssh-service-type)
+            (service alsa-service-type)
             (service nix-service-type)
             (bluetooth-service #:auto-enable? #t)
             (set-xorg-configuration

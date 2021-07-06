@@ -1,0 +1,39 @@
+# Custom alsa config overides /etc/asound.conf
+
+# Am I supposed to define this? Define blue-alsa type
+# /run/current-system/profile/lib/alsa-lib/libasound_module_pcm_bluealsa.so
+# /run/current-system/profile/lib/alsa-lib/libasound_module_ctl_bluealsa.so
+
+# Blue-alsa configuration defined https://github.com/Arkq/bluez-alsa/wiki/Using-the-bluealsa-ALSA-pcm-plugin
+pcm.bt-buds {
+    type plug # pulse???
+    slave.pcm {
+      type bluealsa       # Bluetooth PCM
+      device "94:DB:56:47:BB:8D"          # Device address in format XX:XX:XX:XX:XX:XX
+                        #"special" address 00:00:00:00:00:00 can be used here to select the most recently connected device
+      profile "a2dp"         # Profile type (a2dp or sco)
+      #[delay INT]         # Extra delay (in frames) to be reported to the application (default 0)
+      #[service STR]       # D-Bus name of bluealsa service (default org.bluealsa)
+               }
+        hint {
+              show on
+              description "My Bluetooth Earbuds"
+             }
+}
+
+# defaults.bluealsa.service "org.bluealsa"
+# defaults.bluealsa.device "94:DB:56:47:BB:8D"
+# defaults.bluealsa.profile "a2dp"
+# defaults.bluealsa.delay 10000
+
+
+# Default plugin from .asoundrc wiki https://www.alsa-project.org/main/index.php/Asoundrc
+pcm.!default {
+        type hw
+        card 0
+}
+
+ctl.!default {
+        type hw
+        card 0
+}
