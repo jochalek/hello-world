@@ -31,6 +31,9 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages certs)
+  #:use-module (gnu packages sync)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages gnupg)
   #:use-module (nongnu packages linux)
   #:use-module (nongnu system linux-initrd)
   #:use-module (flat packages emacs))
@@ -47,10 +50,6 @@
                    (elogind-service-type config =>
                                          (elogind-configuration (inherit config)
                                                                 (handle-lid-switch-external-power 'suspend)))
-                   ;; (udev-service-type config =>
-                   ;;                    (udev-configuration (inherit config)
-                   ;;                                        (rules (cons %backlight-udev-rule
-                   ;;                                                     (udev-configuration-rules config)))))
                    (network-manager-service-type config =>
                                                  (network-manager-configuration (inherit config)
                                                                                 (vpn-plugins (list network-manager-openvpn))))))
@@ -74,6 +73,9 @@
                     '("wheel" "netdev" "audio" "video" "lp" "tty")))
                 %base-user-accounts))
 
+  ;; Stop rfkill soft-blocking bt at startup?
+  (kernel-arguments '("modprobe.blacklist=bluetooth,ideapad_laptop"))
+
     ;; Install common system packages
     (packages (append (list
                         fd
@@ -87,6 +89,12 @@
                         bluez-alsa
                         pulseaudio
                         tlp
+                        gnupg
+                        gnome-keyring ;; FIXME Nextcloud autologin?
+                        ;; libgnome-keyring ;; Depricated???
+                        libsecret
+                        qtkeychain
+                        nextcloud-client ;; to access my files everywhere
                         nss-certs)     ;; for HTTPS access
                     %base-packages))
 
@@ -94,7 +102,6 @@
     (append
       (list (service gnome-desktop-service-type)
             (service openssh-service-type)
-            (service alsa-service-type)
             (service nix-service-type)
             (bluetooth-service #:auto-enable? #t)
             (set-xorg-configuration

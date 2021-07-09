@@ -36,6 +36,12 @@
    doom-font (font-spec :family "DejaVu Sans Mono" :size 18 :weight 'light)
    doom-big-font (font-spec :family "DejaVu Sans Mono" :size 24)
    doom-variable-pitch-font (font-spec :family "DejaVu Sans")))
+;; Guix Lenovo Laptop
+(when (string-equal (system-name) "spike")
+  (setq
+   doom-font (font-spec :family "DejaVu Sans Mono" :size 18 :weight 'light)
+   doom-big-font (font-spec :family "DejaVu Sans Mono" :size 24)
+   doom-variable-pitch-font (font-spec :family "DejaVu Sans")))
 ;; Lenovo Laptop
 (when (string-equal (system-name) "PIEROGI")
   (setq
@@ -58,10 +64,10 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org")
+(setq org-directory "~/Nextcloud/org")
 ;; I'll want to use the diary functionality for scheduling non-tasks within
 ;; org-agenda
-(setq diary-file "~/org/diary")
+(setq diary-file "~/Nextcloud/org/diary")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -138,7 +144,7 @@
         (add-to-list 'org-capture-templates
              '("i" "Inbox"
                entry
-               (file+headline "~/org/todo.org" "Inbox")
+               (file+headline "~/Nextcloud/org/todo.org" "Inbox")
                ;; (file+headline "/ssh:moron:/home/justin/projects/shared/org/todo.org" "Inbox")
                ;; (file ,(expand-file-name "todo.org" org-directory))
                "* TODO %?\n /Entered on/ %u"))
@@ -188,7 +194,7 @@
         :desc "org-roam-find-file" "f" #'org-roam-find-file
         :desc "org-roam-show-graph" "g" #'org-roam-show-graph
         :desc "org-roam-capture" "c" #'org-roam-capture)
-  (setq org-roam-directory (file-truename "~/zettels/org-roam")
+  (setq org-roam-directory (file-truename "~/Nextcloud/zettels/org-roam")
         org-roam-db-gc-threshold most-positive-fixnum
         org-roam-graph-exclude-matcher "personal"
         org-roam-tag-sources '(prop last-directory)
@@ -254,11 +260,11 @@
   :after org
   :config
   (map! :map global-map "<f6>" #'helm-bibtex)
-  (setq bibtex-completion-notes-path "~/zettels/org-roam"
-        bibtex-completion-bibliography "~/zettels/org-roam/biblio.bib"
+  (setq bibtex-completion-notes-path "~/Nextcloud/zettels/org-roam"
+        bibtex-completion-bibliography "~/Nextcloud/zettels/org-roam/biblio.bib"
         bibtex-completion-pdf-field "file"
-        bibtex-completion-notes-path "~/zettels/lit/litnotes"
-        bibtex-completion-library-path "~/zettels/lit/"
+        bibtex-completion-notes-path "~/Nextcloud/zettels/lit/litnotes"
+        bibtex-completion-library-path "~/Nextcloud/zettels/lit/"
         ;bibtex-completion-pdf-open-function 'org-open-file
         bibtex-completion-notes-template-multiple-files
          (concat
@@ -284,8 +290,8 @@
 (use-package! org-ref
   :after org
   :config
-  (setq org-ref-bibliography-notes "~/zettels/lit/litnotes.org"
-  org-ref-default-bibliography '("~/zettels/org-roam/biblio.bib")
+  (setq org-ref-bibliography-notes "~/Nextcloud/zettels/lit/litnotes.org"
+  org-ref-default-bibliography '("~/Nextcloud/zettels/org-roam/biblio.bib")
   org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
   ;org-ref-open-pdf-function 'bibtex-completion-pdf-open-function
   org-ref-notes-function 'orb-edit-notes)
@@ -307,11 +313,11 @@
   (map! "<f1>" #'joch/switch-to-agenda)
   (setq org-agenda-block-separator nil
         org-agenda-start-with-log-mode t)
-  (setq org-agenda-files (quote ("~/org")))
+  (setq org-agenda-files (quote ("~/Nextcloud/org")))
   (defun joch/switch-to-agenda ()
     (interactive)
     (org-agenda nil " "))
-  (setq joch/org-agenda-directory (file-truename "~/org/"))
+  (setq joch/org-agenda-directory (file-truename "~/Nextcloud/org/"))
   (defun joch/is-project-p ()
   "Any task with a todo keyword subtask"
   (save-restriction
@@ -356,7 +362,7 @@
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "todo.org")))))
                                        (todo "NEXT"
                                              ((org-agenda-overriding-header "Up Next")
-                                              (org-agenda-files (quote ("~/org")))))
+                                              (org-agenda-files (quote ("~/Nextcloud/org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Active Projects")
                                               (org-agenda-skip-function #'joch/skip-projects)
@@ -375,8 +381,8 @@
                                               (org-agenda-files '(,(concat joch/org-agenda-directory "todo.org")))))
                                        (todo "NEXT"
                                              ((org-agenda-overriding-header "Up Next")
-                                              (org-agenda-files (quote ("~/org/personal.org"
-                                                                       "~/org/projects.org")))))
+                                              (org-agenda-files (quote ("~/Nextcloud/org/personal.org"
+                                                                       "~/Nextcloud/org/projects.org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Active Projects")
                                               (org-agenda-skip-function #'joch/skip-projects)

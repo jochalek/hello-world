@@ -7,4 +7,6 @@
    "font-dejavu"
    "font-gnu-freefont"
    ;; utilities
-   "alsa-utils"))
+   "alsa-utils"
+   ;; databases
+   "sqlite"))

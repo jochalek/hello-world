@@ -1,0 +1,2 @@
+#!/bin/sh
+nextcloudcmd ~/Nextcloud http://192.168.86.33:8080

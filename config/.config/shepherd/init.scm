@@ -5,20 +5,6 @@
     #:start (make-system-constructor "gpg-connect-agent /bye")
     #:stop (make-system-destructor "gpgconf --kill gpg-agent")))
 
-;; (define mcron
-;;   (make <service>
-;;     #:provides '(mcron)
-;;     #:respawn? #t
-;;     #:start (make-forkexec-constructor '("mcron"))
-;;     #:stop  (make-kill-destructor)))
-
-;; (define syncthing
-;;   (make <service>
-;;     #:provides '(syncthing)
-;;     #:respawn? #t
-;;     #:start (make-forkexec-constructor '("syncthing" "-no-browser"))
-;;     #:stop  (make-kill-destructor)))
-
 (define pulseaudio
   (make <service>
     #:provides '(pulseaudio)
