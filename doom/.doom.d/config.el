@@ -39,8 +39,8 @@
 ;; Guix Lenovo Laptop
 (when (string-equal (system-name) "spike")
   (setq
-   doom-font (font-spec :family "DejaVu Sans Mono" :size 18 :weight 'light)
-   doom-big-font (font-spec :family "DejaVu Sans Mono" :size 24)
+   doom-font (font-spec :family "DejaVu Sans Mono" :size 20 :weight 'light)
+   doom-big-font (font-spec :family "DejaVu Sans Mono" :size 26)
    doom-variable-pitch-font (font-spec :family "DejaVu Sans")))
 ;; Lenovo Laptop
 (when (string-equal (system-name) "PIEROGI")
@@ -64,7 +64,8 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Nextcloud/org")
+(setq org-directory "~/Nextcloud/org/")
+(setq joch/zettel-dir "~/Nextcloud/zettels/")
 ;; I'll want to use the diary functionality for scheduling non-tasks within
 ;; org-agenda
 (setq diary-file "~/Nextcloud/org/diary")
@@ -142,11 +143,9 @@
                (file org-default-notes-file)
                "* Meeting with %? :MEETING:\n" :clock-in t :clock-resume t))
         (add-to-list 'org-capture-templates
-             '("i" "Inbox"
+             `("i" "Inbox"
                entry
-               (file+headline "~/Nextcloud/org/todo.org" "Inbox")
-               ;; (file+headline "/ssh:moron:/home/justin/projects/shared/org/todo.org" "Inbox")
-               ;; (file ,(expand-file-name "todo.org" org-directory))
+               (file+headline ,(concat org-directory "todo.org") "Inbox")
                "* TODO %?\n /Entered on/ %u"))
         (add-to-list 'org-capture-templates
                      '("d" "Daily Check-in"
@@ -167,8 +166,8 @@
                       (:newline)
                       ("CANCELLED" . ?c)))
 (global-set-key (kbd "C-c l") #'org-store-link)
-(setq org-refile-targets (quote ((nil :maxlevel . 9)
-                                 (org-agenda-files :maxlevel . 9))))
+(setq org-refile-targets (quote ((nil :maxlevel . 1)
+                                 (org-agenda-files :maxlevel . 1))))
 
 ;; org-latex to pdf with bibliography
 (setq org-latex-pdf-process
@@ -194,7 +193,7 @@
         :desc "org-roam-find-file" "f" #'org-roam-find-file
         :desc "org-roam-show-graph" "g" #'org-roam-show-graph
         :desc "org-roam-capture" "c" #'org-roam-capture)
-  (setq org-roam-directory (file-truename "~/Nextcloud/zettels/org-roam")
+  (setq org-roam-directory (concat joch/zettel-dir "org-roam/")
         org-roam-db-gc-threshold most-positive-fixnum
         org-roam-graph-exclude-matcher "personal"
         org-roam-tag-sources '(prop last-directory)
@@ -260,11 +259,11 @@
   :after org
   :config
   (map! :map global-map "<f6>" #'helm-bibtex)
-  (setq bibtex-completion-notes-path "~/Nextcloud/zettels/org-roam"
-        bibtex-completion-bibliography "~/Nextcloud/zettels/org-roam/biblio.bib"
+  (setq bibtex-completion-notes-path org-roam-directory
+        bibtex-completion-bibliography (concat org-roam-directory "biblio.bib")
         bibtex-completion-pdf-field "file"
-        bibtex-completion-notes-path "~/Nextcloud/zettels/lit/litnotes"
-        bibtex-completion-library-path "~/Nextcloud/zettels/lit/"
+        bibtex-completion-library-path (concat joch/zettel-dir "lit/")
+        bibtex-completion-notes-path (concat bibtex-completion-library-path "litnotes/")
         ;bibtex-completion-pdf-open-function 'org-open-file
         bibtex-completion-notes-template-multiple-files
          (concat
@@ -290,8 +289,8 @@
 (use-package! org-ref
   :after org
   :config
-  (setq org-ref-bibliography-notes "~/Nextcloud/zettels/lit/litnotes.org"
-  org-ref-default-bibliography '("~/Nextcloud/zettels/org-roam/biblio.bib")
+  (setq org-ref-bibliography-notes (concat joch/zettel-dir "lit/litnotes.org")
+        org-ref-default-bibliography `(,(concat org-roam-directory "biblio.bib"))
   org-ref-get-pdf-filename-function 'org-ref-get-pdf-filename-helm-bibtex
   ;org-ref-open-pdf-function 'bibtex-completion-pdf-open-function
   org-ref-notes-function 'orb-edit-notes)
@@ -313,11 +312,11 @@
   (map! "<f1>" #'joch/switch-to-agenda)
   (setq org-agenda-block-separator nil
         org-agenda-start-with-log-mode t)
-  (setq org-agenda-files (quote ("~/Nextcloud/org")))
+  (setq org-agenda-files `(,(file-truename org-directory)))
   (defun joch/switch-to-agenda ()
     (interactive)
     (org-agenda nil " "))
-  (setq joch/org-agenda-directory (file-truename "~/Nextcloud/org/"))
+  (setq joch/org-agenda-directory (file-truename org-directory))
   (defun joch/is-project-p ()
   "Any task with a todo keyword subtask"
   (save-restriction
@@ -359,17 +358,18 @@
                                                 ))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Inbox")
-                                              (org-agenda-files '(,(concat joch/org-agenda-directory "todo.org")))))
+                                              (org-agenda-files `(,(concat joch/org-agenda-directory "todo.org")))))
                                        (todo "NEXT"
                                              ((org-agenda-overriding-header "Up Next")
-                                              (org-agenda-files (quote ("~/Nextcloud/org")))))
+                                              ;; (org-agenda-files (file-truename org-directory))))
+                                              (org-agenda-files `(,(file-truename org-directory)))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Active Projects")
                                               (org-agenda-skip-function #'joch/skip-projects)
-                                              (org-agenda-files '(,(concat joch/org-agenda-directory "projects.org")))))
+                                              (org-agenda-files `(,(concat joch/org-agenda-directory "projects.org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Outstanding Tasks")
-                                              (org-agenda-files '(,(concat joch/org-agenda-directory "personal.org")))
+                                              (org-agenda-files `(,(concat joch/org-agenda-directory "personal.org")))
                                               (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))))
          ("W" "Week Agenda"
                                       ((agenda ""
@@ -378,18 +378,21 @@
                                                 (org-deadline-warning-days 365)))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Inbox")
-                                              (org-agenda-files '(,(concat joch/org-agenda-directory "todo.org")))))
+                                              (org-agenda-files `(,(concat joch/org-agenda-directory "todo.org")))))
                                        (todo "NEXT"
                                              ((org-agenda-overriding-header "Up Next")
-                                              (org-agenda-files (quote ("~/Nextcloud/org/personal.org"
-                                                                       "~/Nextcloud/org/projects.org")))))
+                                              ;; (org-agenda-files (quote ("~/Nextcloud/org/personal.org"
+                                              ;;                          "~/Nextcloud/org/projects.org")))))
+                                              (org-agenda-files (--map (concat joch/org-agenda-directory it)
+                                                                       '("personal.org"
+                                                                         "projects.org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Active Projects")
                                               (org-agenda-skip-function #'joch/skip-projects)
-                                              (org-agenda-files '(,(concat joch/org-agenda-directory "projects.org")))))
+                                              (org-agenda-files `(,(concat joch/org-agenda-directory "projects.org")))))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "One-off Tasks")
-                                              (org-agenda-files '(,(concat joch/org-agenda-directory "personal.org")))
+                                              (org-agenda-files `(,(concat joch/org-agenda-directory "personal.org")))
                                               (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))))
           )))
 (after! org-agenda
