@@ -5,6 +5,7 @@ tmp/
 *~
 *#
 
+bin/.bin/mysync
 config/.config/BraveSoftware/
 config/.config/dconf/
 config/.config/epiphany/
