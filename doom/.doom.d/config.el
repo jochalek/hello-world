@@ -127,16 +127,20 @@
   (require 'nano-writer)
   (require 'visual-fill-column)
   (add-hook 'writer-mode-hook #'visual-fill-column-mode)
+        ;; Anki card captures
         (add-to-list 'org-capture-templates
-             '("A" "Anki basic"
+             '("a" "Anki Cards"))
+        (add-to-list 'org-capture-templates
+             '("aA" "Anki basic"
                entry
                (file+headline org-my-anki-file "Dispatch Shelf")
                "* %<%H:%M>   \n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n%x\n"))
         (add-to-list 'org-capture-templates
-             '("a" "Anki cloze"
+             '("aa" "Anki cloze"
                entry
                (file+headline org-my-anki-file "Dispatch Shelf")
                "* %<%H:%M>   \n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze-AnKingMasterClone\n:ANKI_DECK: Mega\n:ANKI_TAGS:\n:END:\n** Text\n%i%?\n** Extra\n"))
+        ;; Quick captures for stuff I need to do or notes from impromptu meeting
         (add-to-list 'org-capture-templates
              '("m" "Meeting"
                entry
@@ -147,11 +151,29 @@
                entry
                (file+headline ,(concat org-directory "todo.org") "Inbox")
                "* TODO %?\n /Entered on/ %u"))
+        ;; Journal entries
         (add-to-list 'org-capture-templates
-                     '("d" "Daily Check-in"
+                     '("j" "Journal Entries"))
+        (add-to-list 'org-capture-templates
+                     '("jm" "Morning Check-in"
                        entry
                        (file+olp+datetree +org-capture-journal-file)
-                       "* %U Daily Check-in\n** Three things I am grateful for\n1. %?\n** I am looking forward to\n** One thing I can do today no matter what\n- [ ]\n** Most important thing to focus on today\n** Today's items" :prepend t))
+                       "* %U Morning Check-in\n** Three things I am grateful for\n1. %?\n** I am looking forward to\n** One thing I can do today no matter what\n- [ ]\n** Most important thing to focus on today\n** Today's items" :prepend t))
+        (add-to-list 'org-capture-templates
+                     '("jl" "Lunch Check-in"
+                       entry
+                       (file+olp+datetree +org-capture-journal-file)
+                       "* %U Lunch Check-in\n FIXME ENTER SOMETHING HERE"))
+        (add-to-list 'org-capture-templates
+                     '("je" "End of Day Wrap"
+                       entry
+                       (file+olp+datetree +org-capture-journal-file)
+                       "* %U Wrap up the day\n- [ ] Todo your unfinished stuff\n- [ ] Process the Inbox\n- [ ] Schedule Tommorow\n"))
+        (add-to-list 'org-capture-templates
+                     '("jw" "Weekly Review"
+                       entry
+                       (file+olp+datetree +org-capture-journal-file)
+                       "* %U Weekly Review\n** Assess my performance this week\n- Did I get everything done?\n %?\n - If not, why not?\n- What worked well?\n- What could be improved?\n** Plan the upcoming week\n- What do I want to achieve?\n- When will I achieve it?\n- What new approaches/techniques can I try this week?\n"))
         (setq org-my-anki-file "~/projects/anki/anki.org")
         :config
 ;; org-mode, todo, and org-agenda config
@@ -167,7 +189,7 @@
                       ("CANCELLED" . ?c)))
 (global-set-key (kbd "C-c l") #'org-store-link)
 (setq org-refile-targets (quote ((nil :maxlevel . 1)
-                                 (org-agenda-files :maxlevel . 1))))
+                                 (org-agenda-files . (:maxlevel . 1)))))
 
 ;; org-latex to pdf with bibliography
 (setq org-latex-pdf-process
@@ -309,7 +331,7 @@
 (use-package! org-agenda
   :defer t
   :config
-  (map! "<f1>" #'joch/switch-to-agenda)
+  (map! :map global-map "<f1>" #'joch/switch-to-agenda)
   (setq org-agenda-block-separator nil
         org-agenda-start-with-log-mode t)
   (setq org-agenda-files `(,(file-truename org-directory)))

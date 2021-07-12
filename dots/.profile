@@ -9,6 +9,8 @@ GUIX_PROFILE="/home/justin/.guix-profile"
 # xinput set-prop 15 316 -29 -29
 # Reverse scrolling on the Lenovo with ideapad_laptop blacklisted
 xinput set-prop 14 316 -29 -29
+# Enable tap
+xinput set-prop 14 323 1, 1, 1, 1, 1, 0, 0
 
 # Load Nix environment
 if [ -f /run/current-system/profile/etc/profile.d/nix.sh ]; then

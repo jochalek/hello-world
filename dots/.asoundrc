@@ -6,7 +6,7 @@
 
 # Blue-alsa configuration defined https://github.com/Arkq/bluez-alsa/wiki/Using-the-bluealsa-ALSA-pcm-plugin
 pcm.bt-buds {
-    type plug # pulse???
+    type pulse # pulse or plug???
     slave.pcm {
       type bluealsa       # Bluetooth PCM
       device "94:DB:56:47:BB:8D"          # Device address in format XX:XX:XX:XX:XX:XX

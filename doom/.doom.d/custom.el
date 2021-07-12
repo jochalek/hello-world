@@ -12,8 +12,6 @@
  '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#98be65"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#3f444a"))
  '(objed-cursor-color "#ff6c6b")
- '(org-agenda-files
-   '("~/Dropbox/org/todo.org" "c:/Users/jocha/Dropbox/org/journal.org" "c:/Users/jocha/Dropbox/org/medunc.org" "c:/Users/jocha/Dropbox/org/notes.org" "c:/Users/jocha/Dropbox/org/personal.org" "c:/Users/jocha/Dropbox/org/projects.org"))
  '(package-selected-packages '(pdf-tools elisp-benchmarks))
  '(pdf-view-midnight-colors (cons "#bbc2cf" "#282c34"))
  '(rustic-ansi-faces
