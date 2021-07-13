@@ -337,7 +337,7 @@
   (setq org-agenda-files `(,(file-truename org-directory)))
   (defun joch/switch-to-agenda ()
     (interactive)
-    (org-agenda nil " "))
+    (org-agenda nil "1"))
   (setq joch/org-agenda-directory (file-truename org-directory))
   (defun joch/is-project-p ()
   "Any task with a todo keyword subtask"
@@ -370,7 +370,7 @@
 
   (setq org-columns-default-format "%40ITEM(Task) %Effort(EE){:} %CLOCKSUM(Time Spent) %SCHEDULED(Scheduled) %DEADLINE(Deadline)")
   (setq org-agenda-custom-commands
-        `((" " "Today Agenda"
+        `(("1" "Today Agenda"
                                       ((agenda ""
                                                (
                                                 (org-agenda-overriding-header "Today's Schedule:\n Views:z Filters:s\n")
@@ -393,7 +393,7 @@
                                              ((org-agenda-overriding-header "Outstanding Tasks")
                                               (org-agenda-files `(,(concat joch/org-agenda-directory "personal.org")))
                                               (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))))
-         ("W" "Week Agenda"
+         ("w" "Week Agenda"
                                       ((agenda ""
                                                ((org-agenda-span 'week)
                                                 (org-agenda-start-day "+0d")
