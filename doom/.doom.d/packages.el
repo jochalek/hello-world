@@ -52,6 +52,9 @@
 ; For org-roam second brain
 ;; (package! org-roam
 ;;   :recipe (:host github :repo "org-roam/org-roam"))
+; Unpin org-roam from Doom for now to start using v2
+(package! org-roam)
+
 (package! org-roam-bibtex
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))
 (package! company-org-roam

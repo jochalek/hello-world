@@ -147,7 +147,7 @@
        ;;ocaml             ; an objective camel
        (org               ; organize your plain life in plain text
         +jupyter
-        +roam
+        ;+roam ;; FIXME Doom doesn't like v2
         +hugo                ; use Emacs for hugo blogging
         +noter
         +pomodoro)

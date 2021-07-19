@@ -66,6 +66,8 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Nextcloud/org/")
 (setq joch/zettel-dir "~/Nextcloud/zettels/")
+(setq org-roam-directory (concat joch/zettel-dir "org-roam/")) ;; FIXME Try not to declare this twice...
+(setq org-roam-v2-ack t)
 ;; I'll want to use the diary functionality for scheduling non-tasks within
 ;; org-agenda
 (setq diary-file "~/Nextcloud/org/diary")
@@ -209,46 +211,71 @@
   ;; :init
   (map! :leader
         :prefix "n"
-        :desc "org-roam" "l" #'org-roam
-        :desc "org-roam-insert" "i" #'org-roam-insert
-        :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
-        :desc "org-roam-find-file" "f" #'org-roam-find-file
+        :desc "org-roam" "l" #'org-roam-buffer-toggle
+        :desc "org-roam-node-insert" "i" #'org-roam-node-insert
+        :desc "org-roam-node-find" "f" #'org-roam-node-find
+        :desc "org-roam-ref-find" "r" #'org-roam-ref-find
         :desc "org-roam-show-graph" "g" #'org-roam-show-graph
-        :desc "org-roam-capture" "c" #'org-roam-capture)
+        :desc "org-roam-capture" "c" #'org-roam-capture
+        :desc "org-roam-dailies-capture-today" "j" #'org-roam-dailies-capture-today)
   (setq org-roam-directory (concat joch/zettel-dir "org-roam/")
         org-roam-db-gc-threshold most-positive-fixnum
-        org-roam-graph-exclude-matcher "personal"
-        org-roam-tag-sources '(prop last-directory)
+        ;; org-roam-graph-exclude-matcher "personal"
         org-id-link-to-org-use-id t)
-  ;; :config
+;;   ;; :config
+;;   (setq org-roam-capture-templates
+;;         '(("n" "normal" plain (function org-roam--capture-get-point)
+;;            "%?"
+;;            :file-name "${slug}"
+;;            :head "#+setupfile:../hugo_setup.org
+;; #+hugo_slug: ${slug}
+;; #+HUGO_DRAFT: true
+;; #+title: ${title}\n"
+;;            :immediate-finish t
+;;            :unnarrowed t)
+;;           ("p" "personal" plain (function org-roam-capture--get-point)
+;;            "%?"
+;;            :file-name "personal/${slug}"
+;;            :head "#+title: ${title}\n"
+;;            :unnarrowed t)))
+;;   (setq org-roam-capture-ref-templates
+;;         '(("r" "ref" plain (function org-roam-capture--get-point)
+;;            "%?"
+;;            :file-name "lit/${slug}"
+;;            :head "#+setupfile:./hugo_setup.org
+;; #+roam_key: ${ref}
+;; #+hugo_slug: ${slug}
+;; #+roam_tags: website
+;; #+title: ${title}
+;; - source :: ${ref}"
+;;            :unnarrowed t)))
+
+
+ (setq org-roam-mode-sections
+        (list #'org-roam-backlinks-insert-section
+              #'org-roam-reflinks-insert-section
+              ;; #'org-roam-unlinked-references-insert-section
+              ))
+  (org-roam-setup)
   (setq org-roam-capture-templates
-        '(("n" "normal" plain (function org-roam--capture-get-point)
+        '(("n" "normal" plain
            "%?"
-           :file-name "${slug}"
-           :head "#+setupfile:../hugo_setup.org
+           :if-new (file+head "${slug}.org"
+                              "#+setupfile:../hugo_setup.org
 #+hugo_slug: ${slug}
 #+HUGO_DRAFT: true
-#+title: ${title}\n"
+#+title: ${title}\n")
            :immediate-finish t
-           :unnarrowed t)
-          ("p" "personal" plain (function org-roam-capture--get-point)
-           "%?"
-           :file-name "personal/${slug}"
-           :head "#+title: ${title}\n"
            :unnarrowed t)))
   (setq org-roam-capture-ref-templates
-        '(("r" "ref" plain (function org-roam-capture--get-point)
+        '(("r" "ref" plain
            "%?"
-           :file-name "lit/${slug}"
-           :head "#+setupfile:./hugo_setup.org
-#+roam_key: ${ref}
-#+hugo_slug: ${slug}
-#+roam_tags: website
-#+title: ${title}
-- source :: ${ref}"
+           :if-new (file+head "${slug}.org"
+                              "#+title: ${title}\n")
            :unnarrowed t)))
-  (set-company-backend! 'org-mode '(company-capf))
-  )
+
+;;   (set-company-backend! 'org-mode '(company-capf))
+)
 
 (use-package! org-roam-protocol
   :after org-protocol)
