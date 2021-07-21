@@ -2,8 +2,20 @@
 # Honor per-interactive-shell startup file
 if [ -f ~/.bashrc ]; then . ~/.bashrc; fi
 
+# Load default guix profile
 GUIX_PROFILE="/home/justin/.guix-profile"
 . "$GUIX_PROFILE/etc/profile"
+
+# Load extra task-oriented guix profiles
+GUIX_EXTRA_PROFILES="$HOME/.guix-extra-profiles"
+for i in $GUIX_EXTRA_PROFILES/*; do
+  profile=$i/$(basename "$i")
+  if [ -f "$profile"/etc/profile ]; then
+    GUIX_PROFILE="$profile"
+    . "$GUIX_PROFILE"/etc/profile
+  fi
+  unset profile
+done
 
 # Reverse scrolling on the Lenovo
 # xinput set-prop 15 316 -29 -29
@@ -32,3 +44,12 @@ xset +fp $(dirname $(readlink -f ~/.guix-extra-profiles/desktop/desktop/share/fo
 
 # Add my bash scripts to PATH
 export PATH="$HOME/.bin:$PATH"
+
+# To upgrade pip with --user, python needs to have the .local in its path
+# Just install other packages in env
+export PYTHONPATH=.local/lib/python3.8/site-packages:$PYTHONPATH
+# Tensorflow can't find libstc++
+# this could be altered to help
+# GCC_TOOLCHAIN="gcc-toolchain@10.3"
+# GCC_LIB_PATH="$(grep -oE "[^\"]*gcc-10[^\"]*-lib" $(grep -oE "[^\"]*gcc-10[^\"]*drv" $(guix build -d ${GCC_TOOLCHAIN})) | head -n 1)"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/gnu/store/3h7xd0d47a286b6r9qhz4ybi5iaxkfwi-gcc-11.1.0-lib/lib

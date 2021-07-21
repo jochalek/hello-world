@@ -9,4 +9,5 @@
    ;; utilities
    "alsa-utils"
    ;; databases
-   "sqlite"))
+   "sqlite"
+   "password-store"))

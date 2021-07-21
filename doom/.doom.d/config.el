@@ -62,6 +62,10 @@
  'doom-dark+
  'zaiste))
 
+;; Start frame full-screen
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . fullboth))
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Nextcloud/org/")
